@@ -1,0 +1,1513 @@
+<!DOCTYPE html>
+<html lang="ml">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#0e2a52" />
+<title>Traffic Updates | Road Safety Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Malayalam:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;600;700&family=Noto+Sans+Tamil:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* =====================================================================
+   DESIGN TOKENS
+   ===================================================================== */
+:root{
+  --bg:#f4f7fb; --card:#ffffff; --ink:#0f172a; --ink2:#475569; --mute:#7b8aa0; --line:#e3e8ef;
+  --navy:#0e2a52; --navy2:#173b73; --amber:#f59e0b; --amber-ink:#4a2f00;
+  --red:#dc2626; --orange:#ea580c; --green:#16a34a; --blue:#2563eb;
+  --red-bg:#fef2f2; --orange-bg:#fff7ed; --green-bg:#f0fdf4; --blue-bg:#eff6ff; --amber-bg:#fffbeb;
+  --r:14px; --sh:0 1px 2px rgba(15,23,42,.05),0 6px 18px rgba(15,23,42,.06);
+  --f:'Inter','Noto Sans Malayalam','Noto Sans Devanagari','Noto Sans Tamil',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0a1120; --card:#111b30; --ink:#e8edf5; --ink2:#b3bfd1; --mute:#7f8ea6; --line:#22304a;
+    --red-bg:#2b1517; --orange-bg:#2b1c10; --green-bg:#0f2a1b; --blue-bg:#102241; --amber-bg:#2a2210;
+    --sh:0 1px 0 rgba(255,255,255,.03);
+  }
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--f);font-size:15px;line-height:1.65;-webkit-font-smoothing:antialiased;min-height:100vh;overflow-x:hidden}
+h1,h2,h3,h4{font-weight:700;line-height:1.35;letter-spacing:-.005em}
+a{color:inherit;text-decoration:none}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+.wrap{max-width:1160px;margin:0 auto;padding:0 20px}
+.num{font-variant-numeric:tabular-nums}
+[hidden]{display:none!important}
+.skip{position:absolute;left:-999px;top:8px;background:#fff;color:#000;padding:8px 12px;border-radius:8px;z-index:999}
+.skip:focus{left:8px}
+
+/* =====================================================================
+   BUTTONS
+   ===================================================================== */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid transparent;border-radius:10px;padding:10px 18px;font-weight:600;font-size:14px;line-height:1.3;background:var(--amber);color:var(--amber-ink);transition:filter .15s,transform .05s,background .15s;white-space:nowrap}
+.btn:hover{filter:brightness(1.06)}
+.btn:active{transform:translateY(1px)}
+.btn.wa{background:#1fa855;color:#fff}
+.btn.ch{background:transparent;color:#fff;border-color:rgba(255,255,255,.45)}
+.btn.ch:hover{background:rgba(255,255,255,.12)}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+.btn.ghost:hover{background:var(--bg)}
+.btn.danger{background:transparent;color:var(--red);border-color:color-mix(in srgb,var(--red) 40%,transparent)}
+.btn.danger:hover{background:var(--red-bg)}
+.btn.sm{padding:7px 12px;font-size:13px;border-radius:9px}
+
+/* =====================================================================
+   FLASH BAR
+   ===================================================================== */
+.flash{background:var(--red-bg);border-bottom:1px solid color-mix(in srgb,var(--red) 28%,transparent);color:var(--ink)}
+.flash .wrap{display:flex;align-items:center;gap:12px;padding-top:9px;padding-bottom:9px}
+.pulse{width:9px;height:9px;border-radius:50%;background:var(--red);flex:none;box-shadow:0 0 0 0 rgba(220,38,38,.55);animation:pulse 1.8s infinite}
+@keyframes pulse{70%{box-shadow:0 0 0 9px rgba(220,38,38,0)}100%{box-shadow:0 0 0 0 rgba(220,38,38,0)}}
+.flash-text{flex:1;min-width:0;background:none;border:0;text-align:left;font-weight:600;font-size:14.5px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;cursor:pointer}
+.flash-time{font-size:12.5px;color:var(--ink2);white-space:nowrap}
+
+/* =====================================================================
+   HEADER + NAV
+   ===================================================================== */
+.topbar{background:var(--navy);color:#fff}
+.topbar-in{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-top:14px;padding-bottom:14px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.brand-mark{width:46px;height:46px;border-radius:12px;background:#fff;display:grid;place-items:center;font-size:24px;overflow:hidden;flex:none}
+.brand-mark img{width:100%;height:100%;object-fit:cover}
+.brand h1{font-size:19px;font-weight:800;letter-spacing:.01em;color:#fff}
+.brand small{display:block;font-size:12.5px;color:#b9c8e3;line-height:1.35}
+.hdr-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.lang{display:flex;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:3px}
+.lang button{border:0;background:transparent;color:#d6e0f2;padding:6px 14px;border-radius:999px;font-size:13px;font-weight:600;white-space:nowrap}
+.lang button[aria-pressed=true]{background:var(--amber);color:var(--amber-ink)}
+.lang button:not([aria-pressed=true]):hover{background:rgba(255,255,255,.12)}
+.gantry{background:var(--navy2);position:sticky;top:0;z-index:50;box-shadow:0 2px 10px rgba(8,20,45,.25)}
+.gantry .wrap{display:flex;gap:6px;overflow-x:auto;padding-top:8px;padding-bottom:8px;scrollbar-width:none}
+.gantry .wrap::-webkit-scrollbar{display:none}
+.navlink{flex:none;border:0;background:transparent;color:#cbd8ee;padding:8px 14px;border-radius:9px;font-size:13.5px;font-weight:600;white-space:nowrap;transition:background .15s}
+.navlink:hover{background:rgba(255,255,255,.1);color:#fff}
+.navlink.active{background:var(--amber);color:var(--amber-ink)}
+.navlink.hot:not(.active){background:rgba(220,38,38,.9);color:#fff}
+
+/* =====================================================================
+   LAYOUT + COMMON
+   ===================================================================== */
+main{padding:28px 0 56px}
+.panel{display:none}
+.panel.active{display:block;animation:fade .25s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.eyebrow{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--amber);margin-bottom:6px}
+.eyebrow.red{color:var(--red)}
+.section-title{font-size:26px;margin-bottom:6px}
+.section-sub{color:var(--ink2);max-width:760px;margin-bottom:20px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh);padding:20px}
+.card h3{font-size:16px;margin-bottom:6px}
+.card p{color:var(--ink2);font-size:14px}
+.empty{color:var(--mute);text-align:center;padding:28px 12px;font-size:14px;grid-column:1/-1}
+.badge{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;padding:3px 10px;border-radius:999px;line-height:1.5}
+.badge.high{background:var(--red-bg);color:var(--red)}
+.badge.medium{background:var(--orange-bg);color:var(--orange)}
+.badge.low{background:var(--green-bg);color:var(--green)}
+.badge.sample{background:var(--bg);color:var(--mute);border:1px dashed var(--line);font-weight:600}
+.badge.exp{background:var(--blue-bg);color:var(--blue);font-weight:600}
+.badge.exp.soon{background:var(--orange-bg);color:var(--orange)}
+
+/* hero */
+.hero{padding:28px}
+.hero h2{font-size:clamp(24px,4vw,34px);margin:2px 0 10px;line-height:1.35}
+.hero .lead{font-size:16px;color:var(--ink2);max-width:760px;margin-bottom:14px}
+.hero-features{font-weight:700;font-size:14.5px;color:var(--navy);max-width:820px;margin-bottom:8px;line-height:1.8}
+.hero-close{font-size:15.5px;font-weight:600;color:var(--ink);margin-bottom:22px}
+@media (prefers-color-scheme:dark){.hero-features{color:#8db6ff}}
+.vms{display:flex;background:var(--navy);color:#fff;border-radius:12px;overflow:hidden;margin-bottom:0}
+.vms-label{display:flex;align-items:center;gap:8px;background:var(--amber);color:var(--amber-ink);font-weight:800;font-size:12.5px;letter-spacing:.06em;padding:0 16px;flex:none;text-transform:uppercase}
+.vms-label .pulse{background:var(--amber-ink);animation:none;box-shadow:none}
+.vms-win{overflow:hidden;flex:1;min-width:0}
+.vms-track{display:inline-flex;white-space:nowrap;padding:12px 0;animation:ticker 60s linear infinite;will-change:transform}
+.vms-track span{padding:0 34px;font-size:14px}
+.vms:hover .vms-track{animation-play-state:paused}
+@keyframes ticker{to{transform:translateX(-50%)}}
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.stat{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:16px 12px;text-align:center}
+.stat b{display:block;font-size:30px;font-weight:800;color:var(--navy);line-height:1.2;font-variant-numeric:tabular-nums}
+@media (prefers-color-scheme:dark){.stat b{color:#8db6ff}}
+.stat span{font-size:12.5px;color:var(--ink2);display:block;margin-top:2px}
+.quick-title{font-size:18px;margin:26px 0 12px}
+.quicklink-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.quicklink{text-align:left;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px;transition:transform .15s,border-color .15s,box-shadow .15s;box-shadow:var(--sh)}
+.quicklink:hover{transform:translateY(-2px);border-color:var(--amber)}
+.quicklink .ic{font-size:26px;line-height:1;margin-bottom:8px}
+.quicklink h3{font-size:15.5px;margin-bottom:2px}
+.quicklink p{font-size:13px;color:var(--ink2)}
+.quicklink.hot{border-color:color-mix(in srgb,var(--red) 55%,transparent);background:var(--red-bg)}
+.quicklink.hot h3{color:var(--red)}
+
+/* alert cards */
+.filter-row{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:16px;scrollbar-width:none}
+.filter-btn{flex:none;border:1px solid var(--line);background:var(--card);color:var(--ink2);padding:7px 16px;border-radius:999px;font-size:13.5px;font-weight:600}
+.filter-btn.active{background:var(--navy);border-color:var(--navy);color:#fff}
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
+.alert-card{position:relative;padding:18px 18px 16px 22px;overflow:hidden}
+.alert-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--blue)}
+.alert-card.high::before{background:var(--red)}.alert-card.medium::before{background:var(--orange)}.alert-card.low::before{background:var(--green)}
+.ac-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.ac-time{margin-left:auto;font-size:12.5px;color:var(--mute)}
+.alert-card h3{font-size:17px;margin-bottom:2px}
+.alert-card .meta{font-size:13px;color:var(--ink2);margin-bottom:4px}
+.alert-card .desc{margin:6px 0 14px}
+.ac-act{display:flex;gap:8px;flex-wrap:wrap}
+
+/* weather */
+.weather-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:8px}
+.weather-card{text-align:center;padding:18px 12px}
+.weather-card .ic{font-size:34px;line-height:1.2}
+.weather-card h3{font-size:14.5px;margin:4px 0 0}
+.weather-card .temp{font-size:28px;font-weight:800;font-variant-numeric:tabular-nums}
+.weather-card .cond{font-size:12.5px;color:var(--ink2)}
+.wx-note{font-size:12px;color:var(--mute);margin:6px 0 26px}
+.sub-h{font-size:17px;margin:4px 0 12px}
+
+/* tips + emergency */
+.tip-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.tip-grid .ic{font-size:30px;line-height:1;margin-bottom:10px}
+.school-banner{background:var(--amber-bg);border:1px solid color-mix(in srgb,var(--amber) 45%,transparent);border-radius:var(--r);padding:14px 18px;margin-bottom:18px;font-size:14.5px}
+.emg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.emg-card{display:flex;align-items:center;gap:14px;padding:16px 18px;transition:border-color .15s,transform .15s}
+.emg-card:hover{border-color:var(--amber);transform:translateY(-2px)}
+.emg-card .circle{width:50px;height:50px;border-radius:50%;background:var(--bg);display:grid;place-items:center;font-size:24px;flex:none}
+.emg-card h3{font-size:14.5px;margin:0}
+.emg-card .dial{font-size:24px;font-weight:800;color:var(--navy);font-variant-numeric:tabular-nums;line-height:1.3}
+@media (prefers-color-scheme:dark){.emg-card .dial{color:#8db6ff}}
+
+/* forms */
+.two-col{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:18px;align-items:start;margin-bottom:26px}
+.field{margin-bottom:14px}
+.field>label,.field>.lbl{display:block;font-size:13px;font-weight:600;color:var(--ink2);margin-bottom:5px}
+input[type=text],input[type=tel],input[type=password],input[type=date],select,textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--card);font-size:15px}
+input[type=file]{width:100%;font-size:13.5px}
+textarea{resize:vertical;min-height:92px}
+.checks{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.checks label{display:flex;gap:8px;align-items:center;font-size:13.5px;border:1px solid var(--line);border-radius:10px;padding:8px 10px;cursor:pointer}
+.checks label:has(input:checked){background:var(--green-bg);border-color:var(--green)}
+.msg-ok{display:none;margin-top:12px;background:var(--green-bg);color:var(--green);border:1px solid color-mix(in srgb,var(--green) 40%,transparent);padding:10px 14px;border-radius:10px;font-size:14px;font-weight:600}
+.howto{list-style:none;font-size:14px;color:var(--ink2);line-height:2.0}
+.howto b{color:var(--ink)}
+.note{margin-top:14px;padding:12px 14px;background:var(--bg);border-left:4px solid var(--red);border-radius:8px;font-size:13.5px;color:var(--ink2)}
+.note b{color:var(--red)}
+.hint{font-size:12.5px;color:var(--mute);margin-top:8px}
+.hint-blue{margin-top:10px;font-size:12.5px;color:var(--blue)}
+
+/* lost & found */
+.lf-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;align-items:start}
+.lf-col{background:var(--card);border:1px solid var(--line);border-top:4px solid;border-radius:var(--r);padding:14px;box-shadow:var(--sh)}
+.lf-col.lost{border-top-color:var(--red)}.lf-col.found{border-top-color:var(--green)}.lf-col.missing{border-top-color:var(--orange)}
+.lf-col>h3{font-size:16px;margin:2px 4px 12px;display:flex;align-items:center;gap:8px}
+.lf-col .count{margin-left:auto;font-size:12px;font-weight:700;background:var(--bg);color:var(--ink2);padding:2px 10px;border-radius:999px}
+.lf-item{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px}
+.lf-img{width:100%;max-height:220px;object-fit:cover;border-radius:10px;margin-bottom:10px;background:var(--line)}
+.lf-desc{font-size:14.5px;white-space:pre-line;overflow-wrap:anywhere}
+.lf-meta{display:flex;gap:6px 14px;flex-wrap:wrap;font-size:12.5px;color:var(--ink2);margin-top:10px}
+.lf-contact{font-size:13px;color:var(--blue);margin-top:6px;overflow-wrap:anywhere}
+.lf-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.lf-act{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+
+/* groups + support */
+.channel-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.channel-card{display:flex;gap:14px;align-items:flex-start}
+.channel-card .ic{font-size:30px;line-height:1}
+.join-link{display:inline-block;margin-top:8px;font-weight:700;font-size:14px;color:var(--blue)}
+.glist{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:10px}
+.g{border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;font-size:14px;background:var(--card)}
+.g a{color:var(--blue);font-weight:700;font-size:13px}
+.support-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.support-grid .ic{font-size:26px;line-height:1}
+.support-grid h3{margin-top:10px}
+.upi-box{display:flex;gap:10px;align-items:center;justify-content:space-between;margin-top:12px;background:var(--bg);border:1px dashed var(--line);border-radius:10px;padding:8px 10px}
+.upi-box span{font-weight:600;font-size:14px;overflow-wrap:anywhere}
+
+footer{border-top:1px solid var(--line);padding:26px 0 34px;text-align:center;color:var(--ink2);font-size:13px;line-height:1.9}
+footer button{background:none;border:0;color:var(--mute);text-decoration:underline;font-size:12.5px}
+
+/* =====================================================================
+   DIALOGS, TOAST, ADMIN
+   ===================================================================== */
+dialog{border:0;border-radius:18px;width:calc(100% - 24px);max-width:640px;padding:0;background:var(--card);color:var(--ink);box-shadow:0 24px 70px rgba(0,0,0,.4);margin:auto}
+dialog::backdrop{background:rgba(8,16,34,.6)}
+.dh{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid var(--line)}
+.dh h3{font-size:17px}
+.x{background:none;border:0;font-size:26px;line-height:1;color:var(--ink2);padding:0 4px}
+.db{padding:18px;max-height:78vh;overflow:auto}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.langs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+.langs label{display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:13px;cursor:pointer}
+.langs label:has(input:checked){background:var(--blue-bg);border-color:var(--blue)}
+#shText{min-height:200px;font-size:13.5px;line-height:1.55}
+.sh-act{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,20px);background:#0f172a;color:#fff;padding:11px 20px;border-radius:999px;font-size:14px;font-weight:500;opacity:0;pointer-events:none;transition:.25s;z-index:200;max-width:92vw;text-align:center}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.adm-only{display:none!important}
+body.is-admin .adm-only{display:inline-flex!important}
+.fab{position:fixed;right:18px;bottom:calc(18px + env(safe-area-inset-bottom));z-index:60;background:var(--navy);color:#fff;border:2px solid var(--amber);border-radius:999px;padding:11px 18px;font-weight:700;font-size:14px;box-shadow:0 8px 24px rgba(0,0,0,.28);align-items:center;gap:8px}
+hr.sep{border:0;border-top:1px solid var(--line);margin:18px 0}
+
+details.acc{border:1px solid var(--line);border-radius:12px;margin-bottom:10px;background:var(--card)}
+details.acc>summary{padding:12px 14px;font-weight:700;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:8px}
+details.acc>summary::-webkit-details-marker{display:none}
+details.acc>summary::after{content:'▾';color:var(--mute)}
+details.acc[open]>summary::after{content:'▴'}
+.acc-b{padding:4px 14px 14px}
+.row3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.tx-group{margin-bottom:14px;padding-bottom:6px;border-bottom:1px dashed var(--line)}
+.tx-k{font-weight:700;font-size:13.5px;margin-bottom:6px;color:var(--navy)}
+@media (prefers-color-scheme:dark){.tx-k{color:#8db6ff}}
+.stamp{font-weight:600;color:var(--ink2)}
+.flash-adm{display:none;gap:6px}
+.flash.muted{opacity:.8}
+@media (max-width:640px){.row3{grid-template-columns:1fr 1fr}}
+
+/* =====================================================================
+   RESPONSIVE
+   ===================================================================== */
+@media (max-width:980px){
+  .stat-grid{grid-template-columns:repeat(2,1fr)}
+  .two-col{grid-template-columns:1fr}
+  .lf-grid{grid-template-columns:1fr}
+  .quicklink-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:640px){
+  body{font-size:15px}
+  .wrap{padding:0 14px}
+  main{padding:18px 0 90px}
+  .flash-time{display:none}
+  .flash-text{font-size:13.5px}
+  .topbar-in{padding-top:12px;padding-bottom:12px;gap:12px}
+  .brand-mark{width:42px;height:42px}
+  .brand h1{font-size:17px}
+  .hdr-right{width:100%;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .hdr-right .lang{grid-column:1/-1;justify-content:space-between}
+  .lang button{flex:1;padding:8px 6px;font-size:13px}
+  .hdr-right .btn{width:100%;padding:10px 8px}
+  .section-title{font-size:22px}
+  .hero{padding:18px}
+  .hero .lead{font-size:15px}
+  .vms-label{padding:0 10px;font-size:11.5px}
+  .stat b{font-size:24px}
+  .stat{padding:12px 8px}
+  .quicklink-grid{grid-template-columns:1fr 1fr;gap:10px}
+  .quicklink{padding:14px}
+  .card{padding:16px}
+  .card-grid,.tip-grid,.emg-grid,.channel-grid,.support-grid{grid-template-columns:1fr}
+  .weather-grid{grid-template-columns:repeat(2,1fr)}
+  .checks{grid-template-columns:1fr}
+  .row{grid-template-columns:1fr}
+  input[type=text],input[type=tel],input[type=password],input[type=date],select,textarea{font-size:16px;padding:12px}
+  .btn{min-height:44px}
+  .btn.sm{min-height:40px}
+  .ac-act .btn,.lf-act .btn{flex:1}
+  .navlink{padding:10px 14px}
+  dialog{margin:auto 0 0;width:100%;max-width:100%;border-radius:18px 18px 0 0}
+  .db{padding:14px 14px calc(20px + env(safe-area-inset-bottom));max-height:80vh}
+  .sh-act .btn{flex:1}
+  .toast{bottom:calc(84px + env(safe-area-inset-bottom))}
+}
+@media (max-width:360px){.quicklink-grid{grid-template-columns:1fr}.lang button{font-size:12px;padding:8px 3px}}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;scroll-behavior:auto!important}
+  .vms-win{overflow-x:auto}
+}
+@media print{.gantry,.fab,.flash,footer button,.ac-act,.lf-act{display:none!important}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<!-- ===== FLASH ALERT (newest high-severity alert, in selected language) ===== -->
+<div class="flash" id="flash" hidden>
+  <div class="wrap">
+    <span class="pulse" aria-hidden="true"></span>
+    <button class="flash-text" id="flashText" type="button"></button>
+    <span class="flash-adm adm-only"><button class="btn ghost sm" type="button" data-act="banner-edit" aria-label="Edit banner">✏️</button><button class="btn danger sm" type="button" data-act="banner-del" aria-label="Delete banner">🗑</button></span>
+    <span class="flash-time num" id="clock"></span>
+  </div>
+</div>
+
+<!-- ===== HEADER ===== -->
+<header class="topbar">
+  <div class="wrap topbar-in">
+    <div class="brand">
+      <div class="brand-mark" id="logo"><span>🚦</span></div>
+      <div>
+        <h1>Traffic Updates</h1>
+        <small data-i="tagline"></small>
+      </div>
+    </div>
+    <div class="hdr-right">
+      <div class="lang" id="langBar" role="group" aria-label="Language"></div>
+      <a class="btn wa" id="joinBtn" target="_blank" rel="noopener">
+        <span aria-hidden="true">💬</span> <span data-i="joinGroup"></span>
+      </a>
+      <a class="btn ch" id="chBtn" target="_blank" rel="noopener"><span>📢</span> <span data-i="channel"></span></a>
+    </div>
+  </div>
+</header>
+<nav class="gantry" aria-label="Main"><div class="wrap" id="nav"></div></nav>
+
+<!-- ===== MAIN ===== -->
+<main id="main"><div class="wrap">
+
+  <!-- HOME -->
+  <section id="home" class="panel active">
+    <div class="hero card">
+      <span class="eyebrow" data-i="heroEyebrow"></span>
+      <h2 data-i="heroTitle"></h2>
+      <p class="lead" data-i="heroLead"></p>
+      <p class="hero-features" data-i="heroFeatures"></p>
+      <p class="hero-close" data-i="heroClose"></p>
+      <div class="vms" role="marquee" aria-label="Live updates">
+        <div class="vms-label"><span class="pulse" aria-hidden="true"></span><span data-i="live"></span></div>
+        <div class="vms-win"><div class="vms-track" id="vmsTrack"></div></div>
+      </div>
+    </div>
+    <h3 class="quick-title" data-i="quickTitle"></h3>
+    <div class="quicklink-grid" id="quick"></div>
+  </section>
+
+  <!-- LOST & FOUND -->
+  <section id="lostfound" class="panel">
+    <span class="eyebrow red" data-i="lfEyebrow"></span>
+    <h2 class="section-title" data-i="nav_lostfound"></h2>
+    <p class="section-sub" data-i="lfSub"></p>
+    <div class="two-col">
+      <div class="card">
+        <h3 data-i="lfFormTitle"></h3>
+        <form id="lostFoundForm" style="margin-top:14px">
+          <div class="field"><label for="lfType"><span data-i="fType"></span> <span style="color:var(--red)">*</span></label><select id="lfType" required></select></div>
+          <div class="field"><label for="lfDesc"><span data-i="fDesc"></span> <span style="color:var(--red)">*</span></label><textarea id="lfDesc" required maxlength="600" data-ph="lfDescPh"></textarea></div>
+          <div class="field"><label for="lfPlace"><span data-i="fPlace"></span> <span style="color:var(--red)">*</span></label><input type="text" id="lfPlace" required maxlength="120" data-ph="lfPlacePh"></div>
+          <div class="field"><label for="lfDate"><span data-i="fDate"></span> <span style="color:var(--red)">*</span></label><input type="date" id="lfDate" required></div>
+          <div class="field"><label for="lfImage" data-i="fPhoto"></label><input type="file" id="lfImage" accept="image/*"></div>
+          <div class="field"><label for="lfContact" data-i="fContact"></label><input type="text" id="lfContact" maxlength="120" data-ph="fContactPh"></div>
+          <button type="submit" class="btn" style="width:100%" id="lfSubmit"></button>
+          <div class="msg-ok" id="lfSuccess"></div>
+        </form>
+      </div>
+      <div class="card" style="background:var(--red-bg);border-color:color-mix(in srgb,var(--red) 30%,transparent)">
+        <h3 style="color:var(--red)" data-i="howTitle"></h3>
+        <ul class="howto" id="howList" style="margin-top:8px"></ul>
+        <div class="hint-blue" id="expNote"></div>
+        <div class="note"><b data-i="important"></b> <span data-i="importantTxt"></span></div>
+      </div>
+    </div>
+    <div class="lf-grid">
+      <div class="lf-col lost"><h3><span>🔴</span><span data-i="tLost"></span><span class="count" id="cLost">0</span></h3><div id="lostList"></div></div>
+      <div class="lf-col found"><h3><span>🟢</span><span data-i="tFound"></span><span class="count" id="cFound">0</span></h3><div id="foundList"></div></div>
+      <div class="lf-col missing"><h3><span>🟠</span><span data-i="tMissing"></span><span class="count" id="cMissing">0</span></h3><div id="missingList"></div></div>
+    </div>
+  </section>
+
+  <!-- TRAFFIC -->
+  <section id="traffic" class="panel">
+    <span class="eyebrow" data-i="trEyebrow"></span>
+    <h2 class="section-title" data-i="nav_traffic"></h2>
+    <p class="section-sub" data-i="trSub"></p>
+    <div class="filter-row" id="trafficFilters"></div>
+    <div class="card-grid" id="trafficList"></div>
+  </section>
+
+  <!-- ACCIDENT -->
+  <section id="accident" class="panel">
+    <span class="eyebrow" data-i="acEyebrow"></span>
+    <h2 class="section-title" data-i="nav_accident"></h2>
+    <p class="section-sub" data-i="acSub"></p>
+    <div class="card-grid" id="accidentList"></div>
+  </section>
+
+  <!-- WEATHER -->
+  <section id="weather" class="panel">
+    <span class="eyebrow" data-i="wxEyebrow"></span>
+    <h2 class="section-title" data-i="nav_weather"></h2>
+    <p class="section-sub" data-i="wxSub"></p>
+    <div class="weather-grid" id="weatherGrid"></div>
+    <p class="wx-note" id="wxNote"></p>
+    <h3 class="sub-h" data-i="advTitle"></h3>
+    <div class="card-grid" id="advisoryList"></div>
+  </section>
+
+  <!-- SAFETY -->
+  <section id="safety" class="panel">
+    <span class="eyebrow" data-i="saEyebrow"></span>
+    <h2 class="section-title" data-i="nav_safety"></h2>
+    <p class="section-sub" data-i="saSub"></p>
+    <div class="tip-grid" id="safetyTips"></div>
+  </section>
+
+  <!-- SCHOOL -->
+  <section id="school" class="panel">
+    <span class="eyebrow" data-i="scEyebrow"></span>
+    <h2 class="section-title" data-i="nav_school"></h2>
+    <p class="section-sub" data-i="scSub"></p>
+    <div class="school-banner" data-i="scBanner"></div>
+    <div class="tip-grid" id="schoolTips"></div>
+  </section>
+
+  <!-- EMERGENCY -->
+  <section id="emergency" class="panel">
+    <span class="eyebrow" data-i="emEyebrow"></span>
+    <h2 class="section-title" data-i="emTitle"></h2>
+    <p class="section-sub" data-i="emSub"></p>
+    <div class="emg-grid" id="emergencyGrid"></div>
+  </section>
+
+  <!-- VOLUNTEER -->
+  <section id="volunteer" class="panel">
+    <span class="eyebrow" data-i="voEyebrow"></span>
+    <h2 class="section-title" data-i="voTitle"></h2>
+    <p class="section-sub" data-i="voSub"></p>
+    <div class="two-col">
+      <div class="card">
+        <form id="volunteerForm">
+          <div class="field"><label for="vName" data-i="fName"></label><input type="text" id="vName" required maxlength="80" data-ph="fNamePh"></div>
+          <div class="field"><label for="vPhone" data-i="fPhone"></label><input type="tel" id="vPhone" required placeholder="9XXXXXXXXX" pattern="[0-9]{10}" inputmode="numeric"></div>
+          <div class="field"><label for="vPlace" data-i="fArea"></label><input type="text" id="vPlace" required maxlength="80" data-ph="fAreaPh"></div>
+          <div class="field"><span class="lbl" data-i="fInterest"></span><div class="checks" id="interests"></div></div>
+          <button type="submit" class="btn" style="width:100%" data-i="register"></button>
+          <div class="msg-ok" id="volunteerSuccess" data-i="voOk"></div>
+        </form>
+      </div>
+      <div class="card">
+        <h3 data-i="voWhy"></h3>
+        <p style="line-height:1.85;margin:8px 0 14px" data-i="voWhyTxt"></p>
+        <p style="font-size:13px" id="volCountSide"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- GROUPS -->
+  <section id="group" class="panel">
+    <span class="eyebrow" data-i="grEyebrow"></span>
+    <h2 class="section-title" data-i="nav_group"></h2>
+    <p class="section-sub" data-i="grSub"></p>
+    <div class="channel-grid" id="channelGrid"></div>
+    <div id="regional" hidden>
+      <h3 class="sub-h" style="margin-top:26px" data-i="grRegional"></h3>
+      <div class="glist" id="glist"></div>
+    </div>
+  </section>
+
+  <!-- SUPPORT -->
+  <section id="support" class="panel">
+    <span class="eyebrow" data-i="suEyebrow"></span>
+    <h2 class="section-title" data-i="nav_support"></h2>
+    <p class="section-sub" data-i="suSub"></p>
+    <div class="support-grid">
+      <div class="card"><div class="ic">⏱️</div><h3 data-i="suTime"></h3><p data-i="suTimeTxt"></p></div>
+      <div class="card"><div class="ic">📣</div><h3 data-i="suShare"></h3><p data-i="suShareTxt"></p></div>
+      <div class="card" id="donateCard"><div class="ic">💳</div><h3 data-i="suDonate"></h3><p data-i="suDonateTxt"></p>
+        <div class="upi-box"><span class="num" id="upiText"></span><button class="btn ghost sm" id="copyUpiBtn" type="button"></button></div>
+      </div>
+    </div>
+  </section>
+
+</div></main>
+
+<footer>
+  <div class="wrap">
+    <strong>Traffic Updates</strong> — Traffic Information &amp; Road Safety Portal<br>
+    <span data-i="footVol"></span><br>
+    <span data-i="footEmg"></span><br>
+    <button type="button" id="adminLink" data-i="admin"></button>
+  </div>
+</footer>
+
+<button class="fab adm-only" id="admFab" type="button">🛠 <span data-i="adminOn"></span></button>
+
+<!-- ===== SHARE DIALOG ===== -->
+<dialog id="shDlg">
+  <div class="dh"><h3 data-i="shTitle"></h3><button class="x" data-close aria-label="Close">×</button></div>
+  <div class="db">
+    <div class="lbl" style="font-size:13px;font-weight:600;color:var(--ink2);margin-bottom:6px" data-i="shLangs"></div>
+    <div class="langs" id="shLangBox"></div>
+    <textarea id="shText"></textarea>
+    <div class="sh-act">
+      <a class="btn wa" id="shWa" target="_blank" rel="noopener" data-i="shWa"></a>
+      <button class="btn ghost" id="shMore" type="button" data-i="shMore"></button>
+      <button class="btn ghost" id="shCopy" type="button" data-i="copy"></button>
+    </div>
+  </div>
+</dialog>
+
+<!-- ===== PIN DIALOG ===== -->
+<dialog id="pinDlg" style="max-width:380px">
+  <div class="dh"><h3 data-i="admin"></h3><button class="x" data-close aria-label="Close">×</button></div>
+  <form class="db" id="pinForm">
+    <div class="field"><label for="pinIn" data-i="pin"></label><input type="password" id="pinIn" autocomplete="off" required></div>
+    <button class="btn" type="submit" style="width:100%" data-i="unlock"></button>
+  </form>
+</dialog>
+
+<!-- ===== ADMIN DIALOG ===== -->
+<dialog id="admDlg">
+  <div class="dh"><h3>🛠 <span data-i="adminOn"></span></h3><button class="x" data-close aria-label="Close">×</button></div>
+  <div class="db">
+
+    <details class="acc" id="dAlert" open>
+      <summary id="alSummary"></summary>
+      <div class="acc-b">
+        <form id="alForm">
+          <div class="row">
+            <div class="field"><label for="aKind" data-i="aKind"></label><select id="aKind"></select></div>
+            <div class="field"><label for="aType" data-i="aEvent"></label><select id="aType"></select></div>
+          </div>
+          <div class="row">
+            <div class="field"><label for="aSev" data-i="aSev"></label><select id="aSev"></select></div>
+            <div class="field"><label for="aExp" data-i="aValid"></label><select id="aExp"></select></div>
+          </div>
+          <div class="row">
+            <div class="field"><label for="aPlace" data-i="aPlace"></label><input type="text" id="aPlace" maxlength="100"></div>
+            <div class="field"><label for="aTime" data-i="aTime"></label><input type="datetime-local" id="aTime"></div>
+          </div>
+          <div class="field" id="aStatusWrap"><label for="aStatus" data-i="aStatus"></label><select id="aStatus"></select></div>
+          <div id="aDescs"></div>
+          <p class="hint" data-i="aHint"></p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+            <button class="btn" type="submit" id="alSubmit"></button>
+            <button class="btn ghost" type="button" id="alCancel" hidden data-i="cancelEdit"></button>
+          </div>
+        </form>
+      </div>
+    </details>
+
+    <details class="acc" id="dBanner">
+      <summary>🔴 <span data-i="bannerTitle"></span></summary>
+      <div class="acc-b">
+        <div id="bnBox"></div>
+        <p class="hint" data-i="bannerHint"></p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+          <button class="btn" type="button" id="bnSave" data-i="bannerSave"></button>
+          <button class="btn ghost" type="button" id="bnAuto" data-i="bannerAuto"></button>
+          <button class="btn danger" type="button" id="bnDel" data-i="bannerDel"></button>
+        </div>
+      </div>
+    </details>
+
+    <details class="acc" id="dLinks">
+      <summary>🔗 <span data-i="linksTitle"></span></summary>
+      <div class="acc-b">
+        <form id="lkForm">
+          <div class="field"><label for="lkMain" data-i="lMain"></label><input type="text" id="lkMain" placeholder="https://chat.whatsapp.com/…"></div>
+          <div class="field"><label for="lkChannel" data-i="lChannel"></label><input type="text" id="lkChannel" placeholder="https://whatsapp.com/channel/…"></div>
+          <div class="row">
+            <div class="field"><label for="lkFb" data-i="lFb"></label><input type="text" id="lkFb" placeholder="https://facebook.com/…"></div>
+            <div class="field"><label for="lkIg" data-i="lIg"></label><input type="text" id="lkIg" placeholder="https://instagram.com/…"></div>
+          </div>
+          <div class="field"><label for="lkUpi" data-i="lUpi"></label><input type="text" id="lkUpi" placeholder="name@bank" autocomplete="off"></div>
+          <div class="lbl" style="font-size:13px;font-weight:600;color:var(--ink2);margin:6px 0" data-i="lGroups"></div>
+          <div class="row3" id="lkGroups"></div>
+          <button class="btn" type="submit" style="margin-top:8px" data-i="save"></button>
+        </form>
+      </div>
+    </details>
+
+    <details class="acc" id="dTexts">
+      <summary>📝 <span data-i="textsTitle"></span></summary>
+      <div class="acc-b">
+        <form id="txForm">
+          <div id="txBox"></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn" type="submit" data-i="save"></button>
+            <button class="btn ghost" type="button" id="txReset" data-i="resetTexts"></button>
+          </div>
+        </form>
+      </div>
+    </details>
+
+    <details class="acc" id="dPass">
+      <summary>🔑 <span data-i="passTitle"></span></summary>
+      <div class="acc-b">
+        <form id="pwForm" autocomplete="off">
+          <div class="field"><label for="pwCur" data-i="pCur"></label><input type="password" id="pwCur" autocomplete="off" required></div>
+          <div class="row">
+            <div class="field"><label for="pwNew" data-i="pNew"></label><input type="password" id="pwNew" autocomplete="new-password" required></div>
+            <div class="field"><label for="pwNew2" data-i="pNew2"></label><input type="password" id="pwNew2" autocomplete="new-password" required></div>
+          </div>
+          <button class="btn" type="submit" data-i="save"></button>
+          <p class="hint" data-i="pNote"></p>
+        </form>
+      </div>
+    </details>
+
+    <hr class="sep">
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn ghost sm" id="exportData" type="button" data-i="exportData"></button>
+      <button class="btn ghost sm" id="rmSamples" type="button" data-i="rmSamples"></button>
+      <label class="btn ghost sm" style="cursor:pointer"><span data-i="logoUp"></span><input type="file" id="logoIn" accept="image/*" hidden></label>
+      <button class="btn danger sm" id="logout" type="button" data-i="logout"></button>
+    </div>
+    <p class="hint" data-i="exportHint"></p>
+    <p class="hint" data-i="admNote"></p>
+  </div>
+</dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* =====================================================================
+   CONFIG — edit these
+   ===================================================================== */
+const ADMIN_PIN   = '1234';   // CHANGE THIS. Client-side only: stops casual visitors, not a real security layer.
+const DATA_URL    = '';       // after you upload site-data.json (from Admin) set this to 'site-data.json' so every visitor sees your edits
+let MAIN_GROUP  = 'https://chat.whatsapp.com/Hwwx0ichKPmGhzNvOdevqg?mode=gi_t';
+let CHANNEL     = 'https://whatsapp.com/channel/0029VafbTnL23n3Yxo7KqN3Y';
+let FACEBOOK    = '';       // paste your page URL to show the Facebook card
+let INSTAGRAM   = '';       // paste your profile URL to show the Instagram card
+let UPI_ID      = 'saheerpgm@ybl';   // clear to hide the donate box
+const BASE_VOLUNTEERS = 146;
+const LF_DAYS     = { lost: 30, found: 30, missing: 60 };   // Lost & Found posts auto-delete after this many days
+const GROUPS = [   // WhatsApp groups: members + invite link (leave link '' until you have it)
+  {n:'G1',m:992,link:''},{n:'G2',m:980,link:''},{n:'G3',m:975,link:''},{n:'G4',m:1009,link:''},
+  {n:'G5',m:982,link:''},{n:'G6',m:983,link:''},{n:'G7',m:970,link:''},{n:'G8',m:973,link:''},
+  {n:'G9',m:966,link:''},{n:'G10',m:977,link:''},{n:'G11',m:965,link:''},{n:'G12',m:939,link:''},
+  {n:'G13',m:613,link:''}
+];
+
+/* =====================================================================
+   TRANSLATIONS  ml / en / hi / ta
+   ===================================================================== */
+const LANGS=[{c:'ml',n:'മലയാളം',loc:'ml-IN'},{c:'en',n:'English',loc:'en-IN'},{c:'hi',n:'हिन्दी',loc:'hi-IN'},{c:'ta',n:'தமிழ்',loc:'ta-IN'}];
+const L=(ml,en,hi,ta)=>({ml,en,hi,ta});
+const T={
+tagline:L('കമ്മ്യൂണിറ്റി റോഡ് സുരക്ഷാ സംരംഭം','Community road safety initiative','सामुदायिक सड़क सुरक्षा पहल','சமூகச் சாலைப் பாதுகாப்பு முயற்சி'),
+live:L('തത്സമയം','LIVE','लाइव','நேரலை'),
+joinGroup:L('ഗ്രൂപ്പിൽ ചേരുക','Join group','ग्रुप जॉइन करें','குழுவில் சேர'),
+channel:L('ചാനൽ','Channel','चैनल','சேனல்'),
+nav_home:L('ഹോം','Home','होम','முகப்பு'),
+nav_lostfound:L('നഷ്ടപ്പെട്ടവ & ലഭിച്ചവ','Lost & Found','खोया-पाया','தொலைந்தவை & கிடைத்தவை'),
+nav_traffic:L('ട്രാഫിക് അലേർട്ടുകൾ','Traffic Alerts','ट्रैफिक अलर्ट','போக்குவரத்து எச்சரிக்கைகள்'),
+nav_accident:L('അപകട അലേർട്ടുകൾ','Accident Alerts','दुर्घटना अलर्ट','விபத்து எச்சரிக்கைகள்'),
+nav_weather:L('കാലാവസ്ഥ & യാത്ര','Weather & Travel','मौसम और यात्रा','வானிலை & பயணம்'),
+nav_safety:L('റോഡ് സുരക്ഷ','Road Safety','सड़क सुरक्षा','சாலைப் பாதுகாப்பு'),
+nav_school:L('സ്കൂൾ റോഡ് സുരക്ഷ','School Road Safety','स्कूल सड़क सुरक्षा','பள்ளிச் சாலைப் பாதுகாப்பு'),
+nav_emergency:L('എമർജൻസി','Emergency','आपातकाल','அவசர உதவி'),
+nav_volunteer:L('വോളന്റിയർ','Volunteer','स्वयंसेवक','தன்னார்வலர்'),
+nav_group:L('ഗ്രൂപ്പ് & ചാനൽ','Groups & Channel','ग्रुप और चैनल','குழு & சேனல்'),
+nav_support:L('പിന്തുണ','Support','सहयोग','ஆதரவு'),
+
+/* home */
+heroEyebrow:L('ടീം ട്രാഫിക് അപ്ഡേറ്റ്സ്','Team Traffic Updates','टीम ट्रैफिक अपडेट्स','டீம் டிராஃபிக் அப்டேட்ஸ்'),
+heroTitle:L('ഓരോ യാത്രയും വിലപ്പെട്ടതാണ്. ഓരോ ജീവനും വിലപ്പെട്ടതാണ്.','Every journey matters. Every life matters.','हर यात्रा अनमोल है। हर जीवन अनमोल है।','ஒவ்வொரு பயணமும் மதிப்புமிக்கது. ஒவ்வொரு உயிரும் மதிப்புமிக்கது.'),
+heroLead:L('യാത്രകളിൽ ഏറ്റവും പ്രധാനപ്പെട്ട റോഡ് വിവരങ്ങൾ സമയബന്ധിതമായി ജനങ്ങളിലേക്ക് എത്തിക്കാൻ ഞങ്ങൾ ഒരുമിക്കുന്നു.','We come together to bring the most important road information to people in time.','यात्राओं के लिए सबसे ज़रूरी सड़क जानकारी समय पर लोगों तक पहुँचाने के लिए हम एकजुट हैं।','பயணங்களில் மிக முக்கியமான சாலைத் தகவல்களை உரிய நேரத்தில் மக்களிடம் சேர்க்க நாங்கள் ஒன்றிணைகிறோம்.'),
+heroFeatures:L('തത്സമയ ഗതാഗത വിവരങ്ങൾ • അപകട മുന്നറിയിപ്പുകൾ • അടിയന്തര വിവരങ്ങൾ • റോഡ് സുരക്ഷാ ബോധവൽക്കരണം','Live traffic updates • Accident warnings • Emergency information • Road safety awareness','लाइव ट्रैफिक जानकारी • दुर्घटना चेतावनियाँ • आपातकालीन सूचनाएँ • सड़क सुरक्षा जागरूकता','நேரலைப் போக்குவரத்துத் தகவல்கள் • விபத்து எச்சரிக்கைகள் • அவசரத் தகவல்கள் • சாலைப் பாதுகாப்பு விழிப்புணர்வு'),
+heroClose:L('കാരണം, ഓരോരുത്തരും സുരക്ഷിതമായി വീട്ടിലെത്താൻ ആരൊക്കെയോ കാത്തിരിക്കുന്നുണ്ട്. ❤️💛💚','Because someone is waiting for each of us to reach home safely. ❤️💛💚','क्योंकि हर किसी के सुरक्षित घर पहुँचने का इंतज़ार कोई न कोई कर रहा है। ❤️💛💚','ஏனெனில், ஒவ்வொருவரும் பாதுகாப்பாக வீடு திரும்ப யாரோ காத்திருக்கிறார்கள். ❤️💛💚'),
+stAlerts:L('സജീവ അലേർട്ടുകൾ','Active alerts','सक्रिय अलर्ट','செயலில் உள்ள எச்சரிக்கைகள்'),
+stPosts:L('നഷ്ടപ്പെട്ടവ & ലഭിച്ചവ പോസ്റ്റുകൾ','Lost & Found posts','खोया-पाया पोस्ट','தொலைந்தவை & கிடைத்தவை பதிவுகள்'),
+stVol:L('വോളന്റിയർമാർ','Volunteers','स्वयंसेवक','தன்னார்வலர்கள்'),
+stReach:L('ഗ്രൂപ്പ് & ചാനൽ അംഗങ്ങൾ','Group & channel members','ग्रुप व चैनल सदस्य','குழு & சேனல் உறுப்பினர்கள்'),
+quickTitle:L('വേഗത്തിൽ പോകാം','Quick access','त्वरित पहुँच','விரைவு அணுகல்'),
+q_lostfound:L('നഷ്ടപ്പെട്ട വസ്തുക്കൾ, ആളുകൾ, ലഭിച്ച വിവരങ്ങൾ','Lost items, missing people, found reports','खोई चीज़ें, लापता लोग, मिली जानकारी','தொலைந்த பொருட்கள், காணாமல் போனவர்கள், கிடைத்த தகவல்'),
+q_traffic:L('തിരക്ക്, ഡൈവേർഷൻ, റോഡ് ബ്ലോക്ക്','Congestion, diversions, road blocks','जाम, डायवर्जन, सड़क अवरोध','நெரிசல், வழி மாற்றம், சாலைத் தடை'),
+q_accident:L('സമീപകാല അപകടങ്ങൾ','Recent accidents','हाल की दुर्घटनाएँ','சமீபத்திய விபத்துகள்'),
+q_weather:L('മഴ, മൂടൽമഞ്ഞ്, മുന്നറിയിപ്പ്','Rain, fog, warnings','बारिश, कोहरा, चेतावनी','மழை, மூடுபனி, எச்சரிக்கை'),
+q_emergency:L('പോലീസ്, ആംബുലൻസ്','Police, ambulance','पुलिस, एम्बुलेंस','காவல்துறை, ஆம்புலன்ஸ்'),
+q_volunteer:L('നിങ്ങളുടെ സമയം ഒരു ജീവൻ രക്ഷിച്ചേക്കാം','Your time could save a life','आपका समय किसी की जान बचा सकता है','உங்கள் நேரம் ஓர் உயிரைக் காக்கக்கூடும்'),
+
+/* lost & found */
+lfEyebrow:L('സമൂഹത്തിന്റെ കൈത്താങ്ങ്','Community helping hand','समुदाय का सहारा','சமூகத்தின் கைகொடுப்பு'),
+lfSub:L('വാഹനങ്ങൾ, വസ്തുക്കൾ, ആളുകൾ എന്നിവ നഷ്ടപ്പെട്ടാൽ അല്ലെങ്കിൽ കണ്ടെത്തിയാൽ ഇവിടെ രജിസ്റ്റർ ചെയ്യുക. നിങ്ങളുടെ ഒരു പോസ്റ്റ് ഒരാളുടെ നഷ്ടം കണ്ടെത്താൻ സഹായിച്ചേക്കാം.','Register here if a vehicle, belongings or a person is lost or found. Your post may help someone recover their loss.','वाहन, सामान या व्यक्ति के खो जाने या मिलने पर यहाँ पंजीकरण करें। आपकी एक पोस्ट किसी का नुकसान लौटाने में मदद कर सकती है।','வாகனம், பொருட்கள் அல்லது நபர் தொலைந்தாலோ கிடைத்தாலோ இங்கே பதிவு செய்யுங்கள். உங்கள் ஒரு பதிவு ஒருவரின் இழப்பை மீட்க உதவலாம்.'),
+lfFormTitle:L('പുതിയ പോസ്റ്റ് രജിസ്റ്റർ ചെയ്യുക','Register a new post','नई पोस्ट दर्ज करें','புதிய பதிவைச் சேர்க்கவும்'),
+fType:L('തരം','Type','प्रकार','வகை'),
+tLost:L('നഷ്ടപ്പെട്ടു','Lost','खो गया','தொலைந்தது'),
+tFound:L('ലഭിച്ചു','Found','मिला','கிடைத்தது'),
+tMissing:L('കാണ്മാനില്ല','Missing person','लापता','காணவில்லை'),
+fDesc:L('വിവരണം','Description','विवरण','விவரம்'),
+lfDescPh:L('ഉദാ: എന്റെ KL-01-AD-2345 ബൈക്ക് 12-06-26-ന് കോഴിക്കോട് മാളിൽ നിന്നും നഷ്ടപ്പെട്ടു. കണ്ടുകിട്ടുന്നവർ അടുത്തുള്ള പോലീസ് സ്റ്റേഷനിൽ ഏൽപ്പിക്കുക.','e.g. My bike KL-01-AD-2345 was lost from Kozhikode Mall on 12-06-26. Please hand it over at the nearest police station.','उदा: मेरी बाइक KL-01-AD-2345 12-06-26 को कोझिकोड मॉल से खो गई। मिलने पर नज़दीकी थाने में जमा करें।','எ.கா: என் KL-01-AD-2345 பைக் 12-06-26 அன்று கோழிக்கோடு மாலிலிருந்து தொலைந்தது. கிடைத்தால் அருகிலுள்ள காவல் நிலையத்தில் ஒப்படைக்கவும்.'),
+fPlace:L('സ്ഥലം','Place','स्थान','இடம்'),
+lfPlacePh:L('ഉദാ: കോഴിക്കോട് മാൾ, കോയിലാണ്ടി','e.g. Kozhikode Mall, Koyilandy','उदा: कोझिकोड मॉल, कोयिलांडी','எ.கா: கோழிக்கோடு மால், கொயிலாண்டி'),
+fDate:L('തീയതി','Date','तारीख','தேதி'),
+fPhoto:L('ഫോട്ടോ അപ്ലോഡ് ചെയ്യുക','Upload a photo','फोटो अपलोड करें','புகைப்படம் பதிவேற்றவும்'),
+fContact:L('ബന്ധപ്പെടാനുള്ള വിവരം (ഐച്ഛികം)','Contact (optional)','संपर्क जानकारी (वैकल्पिक)','தொடர்புத் தகவல் (விருப்பம்)'),
+fContactPh:L('ഫോൺ നമ്പർ / ഇമെയിൽ','Phone number / email','फोन नंबर / ईमेल','தொலைபேசி எண் / மின்னஞ்சல்'),
+lfPost:L('പോസ്റ്റ് ചെയ്യുക','Post','पोस्ट करें','பதிவிடு'),
+lfOk:L('നന്ദി! പോസ്റ്റ് രജിസ്റ്റർ ചെയ്തു.','Thank you! Your post has been registered.','धन्यवाद! आपकी पोस्ट दर्ज हो गई।','நன்றி! உங்கள் பதிவு சேர்க்கப்பட்டது.'),
+lfReq:L('വിവരണം, സ്ഥലം, തീയതി എന്നിവ നിർബന്ധമാണ്.','Description, place and date are required.','विवरण, स्थान और तारीख़ अनिवार्य हैं।','விவரம், இடம், தேதி கட்டாயம்.'),
+howTitle:L('എങ്ങനെ ഉപയോഗിക്കാം','How it works','कैसे उपयोग करें','எப்படிப் பயன்படுத்துவது'),
+how_lost:L('നിങ്ങൾക്ക് എന്തെങ്കിലും നഷ്ടപ്പെട്ടാൽ','if you have lost something','अगर आपकी कोई चीज़ खो जाए','உங்களுக்கு ஏதாவது தொலைந்தால்'),
+how_found:L('ആരുടെയെങ്കിലും വസ്തു കിട്ടിയാൽ','if you found someone\'s belongings','अगर किसी का सामान मिले','யாருடைய பொருளாவது கிடைத்தால்'),
+how_missing:L('ആളുകളെ കാണാതായാൽ','if a person has gone missing','अगर कोई व्यक्ति लापता हो जाए','யாரேனும் காணாமல் போனால்'),
+how_photo:L('തിരിച്ചറിയാൻ സഹായിക്കും','helps with identification','पहचान में मदद करती है','அடையாளம் காண உதவும்'),
+how_contact:L('കണ്ടെത്തിയാൽ അറിയിക്കാം','so finders can reach you','ताकि मिलने पर सूचित किया जा सके','கண்டுபிடித்தால் தெரிவிக்க'),
+how_contactL:L('ബന്ധപ്പെടൽ','Contact','संपर्क','தொடர்பு'),
+how_photoL:L('ഫോട്ടോ','Photo','फोटो','புகைப்படம்'),
+expNote:L('⏳ ഓരോ പോസ്റ്റും {a} ദിവസത്തിനു ശേഷം (കാണ്മാനില്ല: {b} ദിവസം) സ്വയം നീക്കം ചെയ്യപ്പെടും.','⏳ Posts are removed automatically after {a} days (missing persons: {b} days).','⏳ पोस्ट {a} दिन बाद (लापता: {b} दिन) अपने-आप हट जाती हैं।','⏳ பதிவுகள் {a} நாட்களுக்குப் பிறகு (காணவில்லை: {b} நாட்கள்) தானாக நீக்கப்படும்.'),
+important:L('🚨 പ്രധാനം:','🚨 Important:','🚨 महत्वपूर्ण:','🚨 முக்கியம்:'),
+importantTxt:L('വ്യക്തിപരമായ വിവരങ്ങൾ പങ്കുവെക്കുമ്പോൾ ശ്രദ്ധിക്കുക. പോലീസിൽ റിപ്പോർട്ട് ചെയ്യാൻ മറക്കരുത്.','Be careful when sharing personal details. Do not forget to report to the police.','व्यक्तिगत जानकारी साझा करते समय सावधानी रखें। पुलिस में रिपोर्ट करना न भूलें।','தனிப்பட்ட தகவல்களைப் பகிரும்போது கவனமாக இருங்கள். காவல்துறையில் புகார் செய்ய மறக்காதீர்கள்.'),
+lfEmpty:L('പോസ്റ്റുകളൊന്നുമില്ല','No posts yet','अभी कोई पोस्ट नहीं','பதிவுகள் இல்லை'),
+btnFound:L('ലഭിച്ചു എന്ന് അറിയിക്കുക','Mark as found','मिल गया, सूचित करें','கிடைத்துவிட்டது எனத் தெரிவி'),
+btnLocated:L('കണ്ടെത്തി എന്ന് അറിയിക്കുക','Mark as located','मिल गए, सूचित करें','கண்டுபிடிக்கப்பட்டார் எனத் தெரிவி'),
+btnClaimed:L('ഉടമ എത്തി','Owner claimed','मालिक आ गया','உரிமையாளர் வந்தார்'),
+lfClosed:L('നന്ദി! പോസ്റ്റ് അവസാനിപ്പിച്ചു.','Thank you! The post has been closed.','धन्यवाद! पोस्ट बंद कर दी गई।','நன்றி! பதிவு மூடப்பட்டது.'),
+lfConfirm:L('ഈ പോസ്റ്റ് അവസാനിപ്പിക്കട്ടെ?','Close this post?','क्या यह पोस्ट बंद करें?','இந்தப் பதிவை மூடவா?'),
+daysLeft:L('{n} ദിവസം ബാക്കി','{n} days left','{n} दिन शेष','{n} நாள் மீதம்'),
+endsToday:L('ഇന്ന് അവസാനിക്കും','Ends today','आज समाप्त','இன்று முடியும்'),
+storageFull:L('സ്റ്റോറേജ് നിറഞ്ഞു — ചെറിയ ഫോട്ടോ ഉപയോഗിക്കുക','Storage full — try a smaller photo','स्टोरेज भर गया — छोटी फोटो उपयोग करें','சேமிப்பு நிரம்பியது — சிறிய புகைப்படம் பயன்படுத்தவும்'),
+
+/* alerts */
+trEyebrow:L('വോളന്റിയർ റിപ്പോർട്ടുകളിലൂടെ അപ്ഡേറ്റ് ചെയ്തു','Updated through volunteer reports','स्वयंसेवकों की रिपोर्ट से अपडेट','தன்னார்வலர் அறிக்கைகள் மூலம் புதுப்பிக்கப்பட்டது'),
+trSub:L('തിരക്ക്, അറ്റകുറ്റപ്പണികൾ, ഡൈവേർഷനുകൾ എന്നിവ സംബന്ധിച്ച ഏറ്റവും പുതിയ വിവരങ്ങൾ.','Latest information on congestion, roadworks and diversions.','जाम, मरम्मत कार्य और डायवर्जन की ताज़ा जानकारी।','நெரிசல், பராமரிப்புப் பணிகள், வழி மாற்றங்கள் குறித்த சமீபத்திய தகவல்.'),
+acEyebrow:L('തത്സമയ ഹോട്ട്സ്പോട്ട് ട്രാക്കിംഗ്','Live hotspot tracking','लाइव हॉटस्पॉट ट्रैकिंग','நேரலை ஆபத்துப் பகுதி கண்காணிப்பு'),
+acSub:L('സമീപകാല അപകടങ്ങളും നിലവിലെ സ്ഥിതിയും.','Recent accidents and their current status.','हाल की दुर्घटनाएँ और वर्तमान स्थिति।','சமீபத்திய விபத்துகளும் தற்போதைய நிலையும்.'),
+fAll:L('എല്ലാം','All','सभी','அனைத்தும்'),
+noAlerts:L('അലേർട്ടുകളൊന്നുമില്ല','No alerts in this category.','इस श्रेणी में कोई अलर्ट नहीं।','இந்த வகையில் எச்சரிக்கைகள் இல்லை.'),
+sample:L('സാമ്പിൾ','SAMPLE','नमूना','மாதிரி'),
+share:L('ഷെയർ','Share','शेयर','பகிர்'),
+copy:L('കോപ്പി','Copy','कॉपी','நகலெடு'),
+copied:L('കോപ്പി ചെയ്തു ✓','Copied ✓','कॉपी हो गया ✓','நகலெடுக்கப்பட்டது ✓'),
+
+/* weather */
+wxEyebrow:L('യാത്ര പുറപ്പെടുന്നതിന് മുമ്പ് ആസൂത്രണം ചെയ്യുക','Plan before you travel','यात्रा से पहले योजना बनाएँ','பயணத்துக்கு முன் திட்டமிடுங்கள்'),
+wxSub:L('പ്രധാന സ്ഥലങ്ങളിലെ കാലാവസ്ഥയും യാത്രാ മുന്നറിയിപ്പുകളും.','Weather and travel warnings for major places.','प्रमुख स्थानों का मौसम और यात्रा चेतावनियाँ।','முக்கிய இடங்களின் வானிலையும் பயண எச்சரிக்கைகளும்.'),
+advTitle:L('യാത്രാ ഉപദേശങ്ങൾ','Travel advisories','यात्रा सलाह','பயண ஆலோசனைகள்'),
+wxSrc:L('തത്സമയ ഡാറ്റ: Open-Meteo · {t} ന് പുതുക്കി','Live data: Open-Meteo · updated {t}','लाइव डेटा: Open-Meteo · {t} को अपडेट','நேரலைத் தரவு: Open-Meteo · {t} அன்று புதுப்பிக்கப்பட்டது'),
+wxFail:L('കാലാവസ്ഥ ഇപ്പോൾ ലഭ്യമല്ല (ഇന്റർനെറ്റ് പരിശോധിക്കുക)','Weather is unavailable right now (check your connection)','मौसम अभी उपलब्ध नहीं (इंटरनेट जाँचें)','வானிலை இப்போது கிடைக்கவில்லை (இணைய இணைப்பைச் சரிபார்க்கவும்)'),
+w_clear:L('തെളിഞ്ഞ ആകാശം','Clear','साफ़ आसमान','தெளிவான வானம்'),
+w_partly:L('ഭാഗികമായി മേഘാവൃതം','Partly cloudy','आंशिक बादल','பகுதி மேகமூட்டம்'),
+w_overcast:L('മേഘാവൃതം','Overcast','घने बादल','மேகமூட்டம்'),
+w_fog:L('മൂടൽമഞ്ഞ്','Fog','कोहरा','மூடுபனி'),
+w_drizzle:L('ചാറ്റൽമഴ','Drizzle','बूंदाबांदी','தூறல்'),
+w_rain:L('മഴ','Rain','बारिश','மழை'),
+w_showers:L('ശക്തമായ മഴ','Heavy showers','तेज़ बौछारें','கனமழை'),
+w_thunder:L('ഇടിമിന്നലോടെ മഴ','Thunderstorm','आंधी-तूफ़ान','இடியுடன் மழை'),
+
+/* tips */
+saEyebrow:L('എല്ലാ റോഡ് ഉപയോക്താക്കൾക്കും','For every road user','हर सड़क उपयोगकर्ता के लिए','ஒவ்வொரு சாலைப் பயணிக்கும்'),
+saSub:L('ഡ്രൈവർമാർക്കും യാത്രക്കാർക്കും പാലിക്കാൻ പ്രധാനപ്പെട്ട സുരക്ഷാ നിർദേശങ്ങൾ.','Key safety guidelines for drivers and travellers.','ड्राइवरों और यात्रियों के लिए ज़रूरी सुरक्षा निर्देश।','ஓட்டுநர்களுக்கும் பயணிகளுக்கும் முக்கியமான பாதுகாப்பு வழிகாட்டுதல்கள்.'),
+scEyebrow:L('നമ്മുടെ കുട്ടികളെ സംരക്ഷിക്കുന്നു','Protecting our children','हमारे बच्चों की सुरक्षा','நம் குழந்தைகளைப் பாதுகாப்போம்'),
+scSub:L('സ്കൂൾ പരിസരങ്ങളിലെ പ്രത്യേക ശ്രദ്ധയും മാർഗനിർദേശങ്ങളും.','Special care and guidelines around schools.','स्कूल परिसर के लिए विशेष सावधानियाँ और दिशानिर्देश।','பள்ளிப் பகுதிகளுக்கான சிறப்புக் கவனமும் வழிகாட்டுதல்களும்.'),
+scBanner:L('📌 സ്കൂൾ സമയങ്ങളിൽ (രാവിലെ 8:00–9:30, ഉച്ചയ്ക്ക് 3:00–4:30) സ്കൂൾ പരിസരത്ത് വേഗപരിധി 20 km/h ആയി പരിമിതപ്പെടുത്തണം. ഈ സമയങ്ങളിൽ വോളന്റിയർമാർ സീബ്രാ ക്രോസിങ്ങുകളിൽ സന്നിഹിതരായിരിക്കും.','📌 During school hours (8:00–9:30 am, 3:00–4:30 pm) speed near schools should be limited to 20 km/h. Volunteers will be present at zebra crossings at these times.','📌 स्कूल के समय (सुबह 8:00–9:30, दोपहर 3:00–4:30) स्कूल के पास गति सीमा 20 km/h रखें। इन समयों में स्वयंसेवक ज़ेब्रा क्रॉसिंग पर मौजूद रहेंगे।','📌 பள்ளி நேரங்களில் (காலை 8:00–9:30, மாலை 3:00–4:30) பள்ளிப் பகுதியில் வேகம் 20 km/h ஆகக் குறைக்கப்பட வேண்டும். இந்நேரங்களில் தன்னார்வலர்கள் கடவைகளில் இருப்பார்கள்.'),
+
+/* emergency */
+emEyebrow:L('ഇവ നിങ്ങളുടെ ഫോണിൽ സംരക്ഷിക്കുക','Save these on your phone','इन्हें अपने फोन में सेव करें','இவற்றை உங்கள் தொலைபேசியில் சேமியுங்கள்'),
+emTitle:L('എമർജൻസി നമ്പറുകൾ','Emergency numbers','आपातकालीन नंबर','அவசர எண்கள்'),
+emSub:L('ഏതൊരു അടിയന്തിര സാഹചര്യത്തിലും ഉടൻ വിളിക്കാവുന്ന നമ്പറുകൾ.','Numbers to call immediately in any emergency.','किसी भी आपात स्थिति में तुरंत कॉल करने के नंबर।','எந்த அவசரத்திலும் உடனே அழைக்கக்கூடிய எண்கள்.'),
+
+/* volunteer */
+voEyebrow:L('ശ്രമത്തിൽ ചേരുക','Join the effort','इस प्रयास से जुड़ें','முயற்சியில் இணையுங்கள்'),
+voTitle:L('വോളന്റിയർ രജിസ്ട്രേഷൻ','Volunteer registration','स्वयंसेवक पंजीकरण','தன்னார்வலர் பதிவு'),
+voSub:L('നിങ്ങളുടെ പ്രദേശത്ത് റോഡ് സുരക്ഷാ പ്രവർത്തനങ്ങളിൽ പങ്കാളിയാകാൻ രജിസ്റ്റർ ചെയ്യുക.','Register to take part in road-safety activities in your area.','अपने क्षेत्र में सड़क सुरक्षा गतिविधियों में भाग लेने के लिए पंजीकरण करें।','உங்கள் பகுதியில் சாலைப் பாதுகாப்புப் பணிகளில் பங்கேற்கப் பதிவு செய்யுங்கள்.'),
+fName:L('പേര്','Name','नाम','பெயர்'),
+fNamePh:L('നിങ്ങളുടെ പേര്','Your name','आपका नाम','உங்கள் பெயர்'),
+fPhone:L('ഫോൺ നമ്പർ','Phone number','फोन नंबर','தொலைபேசி எண்'),
+fArea:L('സ്ഥലം / പ്രദേശം','Place / area','स्थान / क्षेत्र','இடம் / பகுதி'),
+fAreaPh:L('ഉദാ: കോഴിക്കോട്','e.g. Kozhikode','उदा: कोझिकोड','எ.கா: கோழிக்கோடு'),
+fInterest:L('താല്പര്യ മേഖല','Areas of interest','रुचि के क्षेत्र','ஆர்வமுள்ள துறைகள்'),
+i_traffic:L('ട്രാഫിക് നിരീക്ഷണം','Traffic monitoring','ट्रैफिक निगरानी','போக்குவரத்துக் கண்காணிப்பு'),
+i_school:L('സ്കൂൾ സോൺ ഡ്യൂട്ടി','School-zone duty','स्कूल ज़ोन ड्यूटी','பள்ளி மண்டலப் பணி'),
+i_firstresponse:L('അപകട പ്രതികരണം','Accident response','दुर्घटना प्रतिक्रिया','விபத்து உதவி'),
+i_awareness:L('ബോധവൽക്കരണം','Awareness','जागरूकता अभियान','விழிப்புணர்வு'),
+register:L('രജിസ്റ്റർ ചെയ്യുക','Register','पंजीकरण करें','பதிவு செய்'),
+voOk:L('✅ നന്ദി! നിങ്ങളുടെ വിവരങ്ങൾ ലഭിച്ചു. ഞങ്ങളുടെ ടീം ഉടൻ ബന്ധപ്പെടും.','✅ Thank you! We have received your details. Our team will contact you soon.','✅ धन्यवाद! आपकी जानकारी मिल गई। हमारी टीम जल्द संपर्क करेगी।','✅ நன்றி! உங்கள் விவரங்கள் கிடைத்தன. எங்கள் குழு விரைவில் தொடர்புகொள்ளும்.'),
+voWhy:L('എന്തിനാണ് വോളന്റിയറാകേണ്ടത്?','Why volunteer?','स्वयंसेवक क्यों बनें?','ஏன் தன்னார்வலராக வேண்டும்?'),
+voWhyTxt:L('നിങ്ങളുടെ ഒരു മണിക്കൂർ സന്നദ്ധസേവനം ഒരു സ്കൂൾ കുട്ടിയുടെ സുരക്ഷിതമായ വഴി ഉറപ്പാക്കിയേക്കാം. ട്രാഫിക് നിരീക്ഷണം, സ്കൂൾ സോൺ ഡ്യൂട്ടി, അപകട പ്രതികരണം, ബോധവൽക്കരണം — നിങ്ങൾക്ക് യോജിച്ച മേഖല തിരഞ്ഞെടുക്കാം.','One hour of your volunteering could keep a schoolchild safe on the road. Choose the area that suits you: traffic monitoring, school-zone duty, accident response or awareness.','आपका एक घंटे का स्वयंसेवा किसी स्कूली बच्चे का रास्ता सुरक्षित कर सकता है। ट्रैफिक निगरानी, स्कूल ज़ोन ड्यूटी, दुर्घटना प्रतिक्रिया या जागरूकता — अपनी पसंद का क्षेत्र चुनें।','உங்கள் ஒரு மணி நேரத் தன்னார்வப் பணி ஒரு பள்ளிக் குழந்தையின் பாதையைப் பாதுகாப்பாக்கலாம். போக்குவரத்துக் கண்காணிப்பு, பள்ளி மண்டலப் பணி, விபத்து உதவி, விழிப்புணர்வு — உங்களுக்குப் பொருத்தமான துறையைத் தேர்ந்தெடுங்கள்.'),
+voCount:L('നിലവിൽ {n} പേർ ഈ കൂട്ടായ്മയുടെ ഭാഗമാണ്.','{n} people are currently part of this community.','वर्तमान में {n} लोग इस समुदाय का हिस्सा हैं।','தற்போது {n} பேர் இந்தக் குழுவில் உள்ளனர்.'),
+
+/* groups + support */
+grEyebrow:L('ബന്ധപ്പെട്ടിരിക്കുക','Stay connected','जुड़े रहें','தொடர்பில் இருங்கள்'),
+grSub:L('തത്സമയ അലേർട്ടുകൾ നേരിട്ട് ലഭിക്കാൻ ഞങ്ങളുടെ ഗ്രൂപ്പുകളിലും ചാനലുകളിലും ചേരുക.','Join our groups and channels to get live alerts directly.','लाइव अलर्ट सीधे पाने के लिए हमारे ग्रुप और चैनल से जुड़ें।','நேரலை எச்சரிக்கைகளை நேரடியாகப் பெற எங்கள் குழுக்களிலும் சேனல்களிலும் சேருங்கள்.'),
+grRegional:L('പ്രാദേശിക ഗ്രൂപ്പുകൾ','Regional groups','क्षेत्रीय ग्रुप','பிராந்தியக் குழுக்கள்'),
+c_wa:L('WhatsApp കമ്മ്യൂണിറ്റി','WhatsApp Community','WhatsApp कम्युनिटी','WhatsApp சமூகம்'),
+c_wa_d:L('പ്രദേശിക അലേർട്ടുകളും ചർച്ചകളും','Local alerts and discussions','स्थानीय अलर्ट और चर्चाएँ','உள்ளூர் எச்சரிக்கைகளும் விவாதங்களும்'),
+c_wa_l:L('ഗ്രൂപ്പിൽ ചേരുക →','Join group →','ग्रुप जॉइन करें →','குழுவில் சேர →'),
+c_ch:L('WhatsApp ചാനൽ','WhatsApp Channel','WhatsApp चैनल','WhatsApp சேனல்'),
+c_ch_d:L('വൺ-വേ ബ്രോഡ്കാസ്റ്റ് അലേർട്ടുകൾ','One-way broadcast alerts','वन-वे ब्रॉडकास्ट अलर्ट','ஒருவழி ஒலிபரப்பு எச்சரிக்கைகள்'),
+c_ch_l:L('ചാനൽ കാണുക →','View channel →','चैनल देखें →','சேனலைப் பார்க்க →'),
+c_fb:L('Facebook പേജ്','Facebook Page','Facebook पेज','Facebook பக்கம்'),
+c_fb_d:L('വാർത്തകളും ക്യാമ്പയിൻ അപ്ഡേറ്റുകളും','News and campaign updates','समाचार और अभियान अपडेट','செய்திகளும் இயக்க அறிவிப்புகளும்'),
+c_fb_l:L('പേജ് സന്ദർശിക്കുക →','Visit page →','पेज देखें →','பக்கத்தைப் பார்க்க →'),
+c_ig:L('Instagram','Instagram','Instagram','Instagram'),
+c_ig_d:L('ഫോട്ടോകളും ഹൈലൈറ്റുകളും','Photos and highlights','फोटो और हाइलाइट्स','புகைப்படங்களும் சிறப்புகளும்'),
+c_ig_l:L('ഫോളോ ചെയ്യുക →','Follow →','फॉलो करें →','பின்தொடர →'),
+suEyebrow:L('ഒരു സന്നദ്ധ പ്രവർത്തനം','A volunteer initiative','एक स्वयंसेवी पहल','ஒரு தன்னார்வ முயற்சி'),
+suSub:L('ഈ പ്രവർത്തനം പൂർണമായും സന്നദ്ധസേവനത്തിലൂടെയാണ് നടത്തുന്നത്. നിങ്ങൾക്ക് പല വിധത്തിൽ പിന്തുണ നൽകാം.','This work runs entirely on volunteer effort. You can support in several ways.','यह कार्य पूरी तरह स्वयंसेवा से चलता है। आप कई तरीकों से सहयोग कर सकते हैं।','இந்தப் பணி முழுவதும் தன்னார்வச் சேவையால் நடக்கிறது. நீங்கள் பல வழிகளில் ஆதரவளிக்கலாம்.'),
+suTime:L('സമയം നൽകുക','Give your time','समय दें','நேரம் வழங்குங்கள்'),
+suTimeTxt:L('വോളന്റിയറായി ചേർന്ന് നേരിട്ട് പ്രവർത്തനങ്ങളിൽ പങ്കാളിയാകുക.','Join as a volunteer and take part in activities directly.','स्वयंसेवक बनकर सीधे गतिविधियों में भाग लें।','தன்னார்வலராக இணைந்து நேரடியாகப் பங்கேற்கவும்.'),
+suShare:L('പങ്കിടുക','Share','साझा करें','பகிருங்கள்'),
+suShareTxt:L('അലേർട്ടുകൾ നിങ്ങളുടെ പ്രദേശത്തെ ഗ്രൂപ്പുകളിലേക്ക് ഷെയർ ചെയ്യുക.','Share alerts to groups in your area.','अलर्ट अपने क्षेत्र के ग्रुप में शेयर करें।','எச்சரிக்கைகளை உங்கள் பகுதிக் குழுக்களில் பகிருங்கள்.'),
+suDonate:L('സംഭാവന ചെയ്യുക','Donate','दान करें','நன்கொடை அளியுங்கள்'),
+suDonateTxt:L('ബോർഡുകൾ, പ്രിന്റിങ്, ക്യാമ്പയിൻ ചെലവുകൾക്കായി.','For boards, printing and campaign costs.','बोर्ड, प्रिंटिंग और अभियान खर्चों के लिए।','பலகைகள், அச்சிடல், இயக்கச் செலவுகளுக்காக.'),
+footVol:L('ഇതൊരു സന്നദ്ധ കൂട്ടായ്മയുടെ വിവരകേന്ദ്രമാണ്, ഔദ്യോഗിക സർക്കാർ സ്രോതസ്സല്ല','A volunteer-run information hub, not an official government source.','यह स्वयंसेवकों द्वारा संचालित सूचना केंद्र है, आधिकारिक सरकारी स्रोत नहीं।','இது தன்னார்வலர்கள் நடத்தும் தகவல் மையம்; அரசு அதிகாரப்பூர்வ ஆதாரம் அல்ல.'),
+footEmg:L('അടിയന്തിര സാഹചര്യങ്ങളിൽ ഉടൻ 112 / 108 എന്നീ നമ്പറുകളിൽ വിളിക്കുക.','In an emergency, call 112 / 108 immediately.','आपात स्थिति में तुरंत 112 / 108 पर कॉल करें।','அவசரத்தில் உடனே 112 / 108 அழைக்கவும்.'),
+
+/* share */
+shTitle:L('ഷെയർ ചെയ്യുക','Share','शेयर करें','பகிர்'),
+shLangs:L('സന്ദേശത്തിലെ ഭാഷകൾ','Languages in the message','संदेश की भाषाएँ','செய்தியில் மொழிகள்'),
+shWa:L('WhatsApp-ൽ അയയ്ക്കുക','Send on WhatsApp','WhatsApp पर भेजें','WhatsApp-இல் அனுப்பு'),
+shMore:L('മറ്റ് ആപ്പുകൾ','More apps','अन्य ऐप्स','பிற ஆப்கள்'),
+
+/* admin */
+admin:L('അഡ്മിൻ','Admin','एडमिन','நிர்வாகி'),
+adminOn:L('അഡ്മിൻ മോഡ്','Admin mode','एडमिन मोड','நிர்வாகி முறை'),
+pin:L('അഡ്മിൻ പാസ്‌വേഡ്','Admin password','एडमिन पासवर्ड','நிர்வாகி கடவுச்சொல்'),
+unlock:L('തുറക്കുക','Unlock','खोलें','திற'),
+badPin:L('തെറ്റായ പാസ്‌വേഡ്','Wrong password','गलत पासवर्ड','தவறான கடவுச்சொல்'),
+logout:L('ലോഗ് ഔട്ട്','Log out','लॉग आउट','வெளியேறு'),
+del:L('ഡിലീറ്റ്','Delete','हटाएँ','நீக்கு'),
+delConfirm:L('ഇത് ഡിലീറ്റ് ചെയ്യട്ടെ?','Delete this item?','क्या इसे हटाएँ?','இதை நீக்கவா?'),
+deleted:L('ഡിലീറ്റ് ചെയ്തു','Deleted','हटा दिया गया','நீக்கப்பட்டது'),
+extend:L('കാലാവധി നീട്ടുക','Extend','अवधि बढ़ाएँ','காலத்தை நீட்டு'),
+extended:L('കാലാവധി നീട്ടി ✓','Extended ✓','अवधि बढ़ाई ✓','நீட்டப்பட்டது ✓'),
+newAlert:L('പുതിയ അലേർട്ട്','New alert','नया अलर्ट','புதிய எச்சரிக்கை'),
+aKind:L('വിഭാഗം','Category','श्रेणी','பிரிவு'),
+aEvent:L('സംഭവം','Event','घटना','நிகழ்வு'),
+aSev:L('തീവ്രത','Severity','गंभीरता','தீவிரம்'),
+aValid:L('കാലാവധി','Valid for','वैधता','செல்லுபடி காலம்'),
+aPlace:L('സ്ഥലം / റോഡ്','Location / road','स्थान / सड़क','இடம் / சாலை'),
+aStatus:L('സ്ഥിതി','Status','स्थिति','நிலை'),
+aHint:L('വിവരണം ഒഴിച്ചിട്ടാൽ സംഭവം അനുസരിച്ച് 4 ഭാഷകളിലും ഓട്ടോമാറ്റിക്കായി നിറയും. വേണമെങ്കിൽ ഏത് ഭാഷയിലും എഡിറ്റ് ചെയ്യാം.','Leave a description empty and it is filled in automatically from the event type. You can edit any language.','विवरण खाली छोड़ने पर घटना के अनुसार चारों भाषाओं में अपने-आप भर जाएगा। किसी भी भाषा में बदल सकते हैं।','விவரத்தை காலியாக விட்டால் நிகழ்வுக்கேற்ப நான்கு மொழிகளிலும் தானாக நிரம்பும். எந்த மொழியையும் திருத்தலாம்.'),
+publish:L('പ്രസിദ്ധീകരിക്കുക','Publish','प्रकाशित करें','வெளியிடு'),
+published:L('പ്രസിദ്ധീകരിച്ചു ✓','Published ✓','प्रकाशित ✓','வெளியிடப்பட்டது ✓'),
+rmSamples:L('സാമ്പിളുകൾ നീക്കുക','Remove samples','नमूने हटाएँ','மாதிரிகளை நீக்கு'),
+logoUp:L('ലോഗോ അപ്‌ലോഡ്','Upload logo','लोगो अपलोड','லோகோ பதிவேற்று'),
+admNote:L('ഇവിടെ ചെയ്യുന്ന മാറ്റങ്ങൾ ഈ ഉപകരണത്തിൽ (ബ്രൗസറിൽ) മാത്രമാണ് സേവ് ആകുന്നത്.','Changes made here are saved on this device (browser) only.','यहाँ किए गए बदलाव केवल इसी डिवाइस (ब्राउज़र) में सेव होते हैं।','இங்கு செய்யும் மாற்றங்கள் இந்தச் சாதனத்தில் (உலாவியில்) மட்டுமே சேமிக்கப்படும்.'),
+k_traffic:L('ട്രാഫിക്','Traffic','ट्रैफिक','போக்குவரத்து'),
+k_accident:L('അപകടം','Accident','दुर्घटना','விபத்து'),
+k_advisory:L('യാത്രാ ഉപദേശം','Travel advisory','यात्रा सलाह','பயண ஆலோசனை'),
+s_high:L('കടുത്തത്','High','उच्च','அதிகம்'),
+s_medium:L('ഇടത്തരം','Medium','मध्यम','நடுத்தரம்'),
+s_low:L('കുറവ്','Low','कम','குறைவு'),
+st_relief:L('രക്ഷാപ്രവർത്തനം തുടരുന്നു','Relief operations ongoing','राहत कार्य जारी','மீட்புப் பணி நடைபெறுகிறது'),
+st_restored:L('ഗതാഗതം പുനഃസ്ഥാപിച്ചു','Traffic restored','यातायात बहाल','போக்குவரத்து சீரானது'),
+st_investigation:L('അന്വേഷണം തുടരുന്നു','Investigation ongoing','जाँच जारी','விசாரணை நடைபெறுகிறது'),
+st_none:L('— ഒന്നുമില്ല —','— none —','— कोई नहीं —','— இல்லை —'),
+hrs:L('മണിക്കൂർ','hours','घंटे','மணி'),
+dys:L('ദിവസം','days','दिन','நாள்'),
+/* admin v2 */
+bannerTitle:L('മുകളിലെ ബാനർ','Top banner','ऊपरी बैनर','மேல் பட்டி'),
+bannerSave:L('ബാനർ സേവ് ചെയ്യുക','Save banner','बैनर सेव करें','பட்டியைச் சேமி'),
+bannerDel:L('ബാനർ ഡിലീറ്റ് ചെയ്യുക','Delete banner','बैनर हटाएँ','பட்டியை நீக்கு'),
+bannerAuto:L('ഓട്ടോ (ഏറ്റവും പുതിയ അലേർട്ടിൽ നിന്ന്)','Auto (from latest alert)','ऑटो (ताज़ा अलर्ट से)','தானியங்கி (சமீபத்திய எச்சரிக்கையிலிருந்து)'),
+bannerOff:L('ബാനർ മറച്ചിരിക്കുന്നു (അഡ്മിന് മാത്രം കാണാം)','Banner is hidden (visible to admin only)','बैनर छिपा है (केवल एडमिन को दिखता है)','பட்டி மறைக்கப்பட்டுள்ளது (நிர்வாகிக்கு மட்டும் தெரியும்)'),
+bannerHint:L('ഇവിടെ എഴുതുന്ന വാചകം ഏറ്റവും മുകളിലെ ബാനറിൽ കാണിക്കും. ഒരു ഭാഷ ഒഴിച്ചിട്ടാൽ മലയാളം ഉപയോഗിക്കും.','This text is shown in the banner at the very top. An empty language falls back to Malayalam.','यह टेक्स्ट सबसे ऊपर बैनर में दिखेगा। खाली भाषा में मलयालम दिखेगा।','இந்த உரை மேலே உள்ள பட்டியில் காட்டப்படும். காலியான மொழிக்கு மலையாளம் பயன்படுத்தப்படும்.'),
+linksTitle:L('ലിങ്കുകൾ & UPI','Links & UPI','लिंक और UPI','இணைப்புகள் & UPI'),
+lMain:L('WhatsApp ഗ്രൂപ്പ് ലിങ്ക്','WhatsApp group link','WhatsApp ग्रुप लिंक','WhatsApp குழு இணைப்பு'),
+lChannel:L('WhatsApp ചാനൽ ലിങ്ക്','WhatsApp channel link','WhatsApp चैनल लिंक','WhatsApp சேனல் இணைப்பு'),
+lFb:L('Facebook ലിങ്ക്','Facebook link','Facebook लिंक','Facebook இணைப்பு'),
+lIg:L('Instagram ലിങ്ക്','Instagram link','Instagram लिंक','Instagram இணைப்பு'),
+lUpi:L('UPI ഐഡി','UPI ID','UPI आईडी','UPI ஐடி'),
+lGroups:L('പ്രാദേശിക ഗ്രൂപ്പ് ലിങ്കുകൾ (G1–G13)','Regional group links (G1–G13)','क्षेत्रीय ग्रुप लिंक (G1–G13)','பிராந்தியக் குழு இணைப்புகள் (G1–G13)'),
+save:L('സേവ് ചെയ്യുക','Save','सेव करें','சேமி'),
+saved:L('സേവ് ചെയ്തു ✓','Saved ✓','सेव हो गया ✓','சேமிக்கப்பட்டது ✓'),
+badUrl:L('ലിങ്ക് http:// അല്ലെങ്കിൽ https:// ഉപയോഗിച്ച് തുടങ്ങണം','Links must start with http:// or https://','लिंक http:// या https:// से शुरू होना चाहिए','இணைப்பு http:// அல்லது https:// உடன் தொடங்க வேண்டும்'),
+textsTitle:L('ഹോം ടെക്സ്റ്റ്','Home text','होम टेक्स्ट','முகப்பு உரை'),
+resetTexts:L('ഡിഫോൾട്ടിലേക്ക് മടങ്ങുക','Reset to default','डिफ़ॉल्ट पर लौटें','இயல்புநிலைக்குத் திரும்பு'),
+ek_heroEyebrow:L('മുകളിലെ വരി','Top line','ऊपरी पंक्ति','மேல் வரி'),
+ek_heroTitle:L('തലക്കെട്ട്','Heading','शीर्षक','தலைப்பு'),
+ek_heroLead:L('ഖണ്ഡിക','Paragraph','अनुच्छेद','பத்தி'),
+ek_heroFeatures:L('വിഷയങ്ങളുടെ വരി','Topics line','विषय पंक्ति','தலைப்புகள் வரி'),
+ek_heroClose:L('അവസാന വരി','Closing line','अंतिम पंक्ति','இறுதி வரி'),
+ek_tagline:L('ഹെഡർ ടാഗ്‌ലൈൻ','Header tagline','हेडर टैगलाइन','தலைப்புப் பட்டி வாசகம்'),
+passTitle:L('അഡ്മിൻ പാസ്‌വേഡ് മാറ്റുക','Change admin password','एडमिन पासवर्ड बदलें','நிர்வாகி கடவுச்சொல்லை மாற்று'),
+pCur:L('ഇപ്പോഴത്തെ പാസ്‌വേഡ്','Current password','वर्तमान पासवर्ड','தற்போதைய கடவுச்சொல்'),
+pNew:L('പുതിയ പാസ്‌വേഡ്','New password','नया पासवर्ड','புதிய கடவுச்சொல்'),
+pNew2:L('പുതിയത് വീണ്ടും','Repeat new password','नया पासवर्ड दोहराएँ','புதியதை மீண்டும் உள்ளிடவும்'),
+pChanged:L('പാസ്‌വേഡ് മാറ്റി ✓','Password changed ✓','पासवर्ड बदल गया ✓','கடவுச்சொல் மாற்றப்பட்டது ✓'),
+pMismatch:L('പുതിയ പാസ്‌വേഡുകൾ ഒരുപോലെയല്ല','New passwords do not match','नए पासवर्ड मेल नहीं खाते','புதிய கடவுச்சொற்கள் பொருந்தவில்லை'),
+pShort:L('കുറഞ്ഞത് 4 അക്ഷരം വേണം','At least 4 characters','कम से कम 4 अक्षर चाहिए','குறைந்தது 4 எழுத்துகள் வேண்டும்'),
+pWrong:L('ഇപ്പോഴത്തെ പാസ്‌വേഡ് തെറ്റാണ്','Current password is wrong','वर्तमान पासवर्ड गलत है','தற்போதைய கடவுச்சொல் தவறு'),
+pNote:L('ഈ പാസ്‌വേഡ് ഈ ഉപകരണത്തിൽ (ബ്രൗസറിൽ) മാത്രമാണ് മാറുന്നത്.','The password changes on this device (browser) only.','यह पासवर्ड केवल इसी डिवाइस (ब्राउज़र) पर बदलता है।','இந்தக் கடவுச்சொல் இந்தச் சாதனத்தில் (உலாவியில்) மட்டுமே மாறும்.'),
+editAlert:L('അലേർട്ട് എഡിറ്റ് ചെയ്യുക','Edit alert','अलर्ट संपादित करें','எச்சரிக்கையைத் திருத்து'),
+edit:L('എഡിറ്റ്','Edit','संपादित करें','திருத்து'),
+aTime:L('തീയതി & സമയം','Date & time','तारीख़ और समय','தேதி & நேரம்'),
+keep:L('— മാറ്റമില്ല —','— unchanged —','— अपरिवर्तित —','— மாற்றம் இல்லை —'),
+cancelEdit:L('എഡിറ്റ് റദ്ദാക്കുക','Cancel edit','संपादन रद्द करें','திருத்தத்தை ரத்து செய்'),
+update:L('അപ്ഡേറ്റ് ചെയ്യുക','Update','अपडेट करें','புதுப்பி'),
+updated:L('അപ്ഡേറ്റ് ചെയ്തു ✓','Updated ✓','अपडेट हो गया ✓','புதுப்பிக்கப்பட்டது ✓'),
+needPlace:L('സ്ഥലം നൽകുക','Enter a location','स्थान दर्ज करें','இடத்தை உள்ளிடவும்'),
+needText:L('വാചകം നൽകുക','Enter some text','कुछ टेक्स्ट दर्ज करें','உரையை உள்ளிடவும்'),
+exportData:L('സൈറ്റ് ഡാറ്റ ഡൗൺലോഡ് (site-data.json)','Download site data (site-data.json)','साइट डेटा डाउनलोड (site-data.json)','தளத் தரவைப் பதிவிறக்கு (site-data.json)'),
+exportHint:L('മാറ്റങ്ങൾ എല്ലാ സന്ദർശകർക്കും കാണാൻ: ഈ ഫയൽ traffic.html ഉള്ള സ്ഥലത്ത് അപ്‌ലോഡ് ചെയ്യുക, എന്നിട്ട് traffic.html-ന്റെ മുകളിൽ DATA_URL = \'site-data.json\' എന്ന് സെറ്റ് ചെയ്യുക.','To show your changes to every visitor: upload this file next to traffic.html, then set DATA_URL = \'site-data.json\' at the top of traffic.html.','बदलाव सभी आगंतुकों को दिखाने के लिए: यह फ़ाइल traffic.html के साथ अपलोड करें, फिर traffic.html के ऊपर DATA_URL = \'site-data.json\' सेट करें।','மாற்றங்கள் அனைத்துப் பார்வையாளர்களுக்கும் தெரிய: இந்தக் கோப்பை traffic.html உள்ள இடத்தில் பதிவேற்றி, traffic.html-இன் மேலே DATA_URL = \'site-data.json\' என அமைக்கவும்.')
+};
+const lang0=()=>{try{return localStorage.getItem('tu_lang')}catch(e){return null}};
+let lang=LANGS.some(l=>l.c===lang0())?lang0():'ml';
+let OV={};
+const t=(k,v)=>{let s=(OV[k]&&OV[k][lang])||(T[k]&&(T[k][lang]||T[k].ml))||k;if(v)for(const x in v)s=s.replace('{'+x+'}',v[x]);return s};
+const tx=v=>typeof v==='string'?v:(v&&(v[lang]||v.ml||v.en||Object.values(v).find(Boolean)))||'';
+const LOC=()=>LANGS.find(l=>l.c===lang).loc;
+
+/* event templates (also used for admin auto-fill) */
+const EVENTS={
+roadblock:{ic:'🚧',n:L('റോഡ് ബ്ലോക്ക്','Road block','सड़क अवरुद्ध','சாலைத் தடை'),d:L('{p}: റോഡ് ബ്ലോക്ക്. ഈ വഴി ഒഴിവാക്കി മറ്റ് റൂട്ട് ഉപയോഗിക്കുക.','Road blocked at {p}. Please avoid this route and use an alternate road.','{p} पर सड़क अवरुद्ध है। कृपया इस मार्ग से बचें और वैकल्पिक रास्ता अपनाएँ।','{p} இல் சாலை தடைபட்டுள்ளது. இந்த வழியைத் தவிர்த்து மாற்று வழியில் செல்லவும்.')},
+accident:{ic:'🚨',n:L('അപകടം','Accident','दुर्घटना','விபத்து'),d:L('{p}: അപകടം. ഗതാഗതം തടസ്സപ്പെട്ടിരിക്കുന്നു, ശ്രദ്ധയോടെ പോകുക.','Accident at {p}. Traffic is affected. Drive carefully.','{p} पर दुर्घटना हुई है। यातायात प्रभावित है, सावधानी से चलें।','{p} இல் விபத்து ஏற்பட்டுள்ளது. போக்குவரத்து பாதிக்கப்பட்டுள்ளது, கவனமாகச் செல்லவும்.')},
+congestion:{ic:'🚗',n:L('ഗതാഗതക്കുരുക്ക്','Congestion','जाम','நெரிசல்'),d:L('{p}: കടുത്ത ഗതാഗതക്കുരുക്ക്. കൂടുതൽ സമയം പ്രതീക്ഷിക്കുക.','Heavy congestion at {p}. Expect delays.','{p} पर भारी जाम है। देरी की संभावना है।','{p} இல் கடும் போக்குவரத்து நெரிசல். தாமதம் ஏற்படலாம்.')},
+breakdown:{ic:'🛠️',n:L('വാഹനം കേടായി','Breakdown','वाहन खराबी','வாகனப் பழுது'),d:L('{p}: വാഹനം കേടായതിനാൽ തിരക്ക് അനുഭവപ്പെടുന്നു.','Vehicle breakdown at {p} is causing congestion.','{p} पर वाहन खराब होने से जाम लगा है।','{p} இல் வாகனம் பழுதடைந்ததால் நெரிசல் ஏற்பட்டுள்ளது.')},
+diversion:{ic:'↪️',n:L('വഴിതിരിച്ചുവിടൽ','Diversion','डायवर्जन','வழி மாற்றம்'),d:L('{p}: ഗതാഗതം വഴിതിരിച്ചുവിട്ടിരിക്കുന്നു. ബോർഡുകൾ ശ്രദ്ധിക്കുക.','Traffic diverted at {p}. Follow the diversion signs.','{p} पर यातायात डायवर्ट किया गया है। संकेतों का पालन करें।','{p} இல் போக்குவரத்து மாற்றி விடப்பட்டுள்ளது. வழிகாட்டிப் பலகைகளைப் பின்பற்றவும்.')},
+weather:{ic:'🌧️',n:L('കാലാവസ്ഥ','Weather','मौसम','வானிலை'),d:L('{p}: മോശം കാലാവസ്ഥ (മഴ/മൂടൽമഞ്ഞ്). വേഗം കുറച്ച് ശ്രദ്ധയോടെ ഓടിക്കുക.','Bad weather near {p} (rain/fog). Slow down and drive with care.','{p} के पास खराब मौसम (बारिश/कोहरा)। गति कम रखें और सावधानी से चलें।','{p} அருகே மோசமான வானிலை (மழை/மூடுபனி). வேகத்தைக் குறைத்து கவனமாக ஓட்டவும்.')},
+cleared:{ic:'✅',n:L('ഗതാഗതം സാധാരണം','Cleared','सामान्य','இயல்பு நிலை'),d:L('{p}: ഗതാഗതം സാധാരണ നിലയിലായി.','Traffic is back to normal at {p}.','{p} पर यातायात सामान्य हो गया है।','{p} இல் போக்குவரத்து இயல்பு நிலைக்குத் திரும்பியது.')}
+};
+const SAFETY=[
+['🪖',L('ഹെൽമെറ്റ് നിർബന്ധം','Helmet is mandatory','हेलमेट अनिवार्य','தலைக்கவசம் கட்டாயம்'),L('ഇരുചക്രവാഹന യാത്രക്കാർ എപ്പോഴും ഹെൽമെറ്റ് ധരിക്കണം.','Two-wheeler riders must always wear helmets.','दोपहिया सवार हमेशा हेलमेट पहनें।','இருசக்கர வாகன ஓட்டிகள் எப்போதும் தலைக்கவசம் அணிய வேண்டும்.')],
+['📵',L('ഡ്രൈവ് ചെയ്യുമ്പോൾ ഫോൺ വേണ്ട','No phone while driving','गाड़ी चलाते समय फोन नहीं','ஓட்டும்போது தொலைபேசி வேண்டாம்'),L('ഡ്രൈവിങ്ങിനിടെ ഫോൺ വിളിയും മെസ്സേജും ഒഴിവാക്കുക.','Avoid phone calls and messages while driving.','ड्राइविंग के दौरान फोन कॉल और मैसेज से बचें।','வாகனம் ஓட்டும்போது அழைப்பு, செய்தி தவிர்க்கவும்.')],
+['💺',L('സീറ്റ് ബെൽറ്റ്','Seat belt','सीट बेल्ट','சீட் பெல்ட்'),L('മുൻ-പിൻ സീറ്റുകളിൽ എല്ലാവരും സീറ്റ് ബെൽറ്റ് ധരിക്കണം.','Everyone in front and rear seats must wear seat belts.','आगे और पीछे की सीट पर सभी सीट बेल्ट लगाएँ।','முன், பின் இருக்கைகளில் அனைவரும் சீட் பெல்ட் அணிய வேண்டும்.')],
+['🚫',L('മദ്യപിച്ച് വാഹനമോടിക്കരുത്','Do not drink and drive','नशे में गाड़ी न चलाएँ','மது அருந்தி ஓட்டாதீர்கள்'),L('മദ്യപിച്ച ശേഷം ഒരിക്കലും വാഹനം ഓടിക്കരുത്.','Never drive after consuming alcohol.','शराब पीने के बाद कभी वाहन न चलाएँ।','மது அருந்திய பின் ஒருபோதும் வாகனம் ஓட்டாதீர்கள்.')],
+['⏱️',L('വേഗപരിധി പാലിക്കുക','Follow speed limits','गति सीमा का पालन करें','வேக வரம்பைப் பின்பற்றுங்கள்'),L('എപ്പോഴും വേഗപരിധി പാലിക്കുക, പ്രത്യേകിച്ച് വളവുകളിൽ.','Always follow speed limits, especially on curves.','हमेशा गति सीमा का पालन करें, खासकर मोड़ों पर।','எப்போதும் வேக வரம்பைப் பின்பற்றுங்கள், குறிப்பாக வளைவுகளில்.')],
+['🌙',L('രാത്രി യാത്രയിൽ ജാഗ്രത','Night travel caution','रात की यात्रा में सावधानी','இரவுப் பயணத்தில் கவனம்'),L('ക്ഷീണം തോന്നിയാൽ വിശ്രമിക്കുക. ഹെഡ്‌ലൈറ്റ് പരിശോധിക്കുക.','Rest if you feel tired. Check your headlights.','थकान हो तो आराम करें। हेडलाइट जाँचें।','சோர்வாக இருந்தால் ஓய்வெடுங்கள். ஹெட்லைட்டைச் சரிபாருங்கள்.')]
+];
+const SCHOOL=[
+['🚸',L('സീബ്ര ക്രോസിങ് ഉപയോഗിക്കുക','Use zebra crossings','ज़ेब्रा क्रॉसिंग का उपयोग करें','வரிக்குதிரைக் கடவையைப் பயன்படுத்துங்கள்'),L('കുട്ടികൾ റോഡ് മുറിച്ചുകടക്കാൻ സീബ്ര ക്രോസിങ് ഉപയോഗിക്കണം.','Children should use zebra crossings to cross the road.','बच्चे सड़क पार करने के लिए ज़ेब्रा क्रॉसिंग का उपयोग करें।','குழந்தைகள் சாலையைக் கடக்க வரிக்குதிரைக் கடவையைப் பயன்படுத்த வேண்டும்.')],
+['🐢',L('സ്കൂൾ സോൺ വേഗപരിധി','School-zone speed limit','स्कूल ज़ोन गति सीमा','பள்ளி மண்டல வேக வரம்பு'),L('സ്കൂൾ സോണിൽ 20 km/h വേഗപരിധി കർശനമായി പാലിക്കുക.','Strictly follow the 20 km/h limit in school zones.','स्कूल ज़ोन में 20 km/h की सीमा का सख़्ती से पालन करें।','பள்ளி மண்டலத்தில் 20 km/h வேக வரம்பைக் கண்டிப்பாகப் பின்பற்றுங்கள்.')],
+['👮',L('വിദ്യാർഥി സുരക്ഷാ പട്രോൾ','Student safety patrol','छात्र सुरक्षा गश्त','மாணவர் பாதுகாப்புக் காவல்'),L('സ്കൂൾ സമയത്ത് ക്രോസിങ്ങുകൾ നിയന്ത്രിക്കാൻ വോളന്റിയർമാർ സഹായിക്കും.','Volunteers help manage crossings during school hours.','स्कूल के समय स्वयंसेवक क्रॉसिंग संभालने में मदद करते हैं।','பள்ளி நேரத்தில் கடவைகளை ஒழுங்குபடுத்த தன்னார்வலர்கள் உதவுவார்கள்.')],
+['👨‍👩‍👧',L('രക്ഷിതാക്കൾക്കുള്ള നിർദേശം','Parents\' guide','अभिभावकों के लिए','பெற்றோருக்கான வழிகாட்டி'),L('കുട്ടികളെ ഇറക്കുമ്പോഴും കൊണ്ടുപോകുമ്പോഴും ഡബിൾ പാർക്കിങ് ഒഴിവാക്കുക.','Avoid double parking during pick-up and drop-off.','बच्चों को छोड़ते और लेते समय डबल पार्किंग से बचें।','குழந்தைகளை இறக்கும்போதும் ஏற்றும்போதும் இரட்டை நிறுத்தத்தைத் தவிர்க்கவும்.')],
+['🦺',L('റിഫ്ലക്ടീവ് ഗിയർ','Reflective gear','रिफ्लेक्टिव गियर','ஒளிரும் பட்டைகள்'),L('ഇരുട്ടുള്ള പ്രഭാതങ്ങളിൽ കുട്ടികളുടെ ബാഗിൽ റിഫ്ലക്ടീവ് ടാഗ് ഉപയോഗിക്കുക.','Use reflective bag tags for children on dark mornings.','अँधेरी सुबह में बच्चों के बैग पर रिफ्लेक्टिव टैग लगाएँ।','இருட்டான காலைகளில் குழந்தைகளின் பையில் ஒளிரும் குறிச்சொல் பயன்படுத்துங்கள்.')],
+['🚏',L('സ്കൂൾ ബസ് കാത്തുനിൽപ്പ്','Waiting for the school bus','स्कूल बस का इंतज़ार','பள்ளிப் பேருந்துக்குக் காத்திருத்தல்'),L('കാത്തുനിൽക്കുമ്പോൾ കുട്ടികൾ റോഡിൽ നിന്ന് അകലെ നിൽക്കണം.','Children should stand away from the road while waiting.','इंतज़ार करते समय बच्चे सड़क से दूर खड़े रहें।','காத்திருக்கும்போது குழந்தைகள் சாலையிலிருந்து தள்ளி நிற்க வேண்டும்.')]
+];
+const EMERGENCY=[
+['🚓',L('പോലീസ്','Police','पुलिस','காவல்துறை'),'100'],
+['🚑',L('ആംബുലൻസ്','Ambulance','एम्बुलेंस','ஆம்புலன்ஸ்'),'108'],
+['🚒',L('ഫയർ ഫോഴ്സ്','Fire Force','दमकल','தீயணைப்புத் துறை'),'101'],
+['🆘',L('ദേശീയ അടിയന്തര നമ്പർ','National Emergency','राष्ट्रीय आपातकाल','தேசிய அவசர எண்'),'112'],
+['🚦',L('ട്രാഫിക് ഹെൽപ്‌ലൈൻ','Traffic Helpline','ट्रैफिक हेल्पलाइन','போக்குவரத்து உதவி எண்'),'1073'],
+['🛣️',L('ഹൈവേ പട്രോൾ','Highway Patrol','हाईवे पेट्रोल','நெடுஞ்சாலை ரோந்து'),'1033'],
+['👩',L('വനിതാ ഹെൽപ്‌ലൈൻ','Women\'s Helpline','महिला हेल्पलाइन','பெண்கள் உதவி எண்'),'1091'],
+['🧒',L('ചൈൽഡ് ഹെൽപ്‌ലൈൻ','Child Helpline','चाइल्ड हेल्पलाइन','குழந்தைகள் உதவி எண்'),'1098'],
+['🌊',L('ദുരന്ത നിവാരണം','Disaster Management','आपदा प्रबंधन','பேரிடர் மேலாண்மை'),'1077']
+];
+const CITIES=[
+{lat:11.2588,lon:75.7804,n:L('കോഴിക്കോട്','Kozhikode','कोझिकोड','கோழிக்கோடு')},
+{lat:10.7867,lon:76.6548,n:L('പാലക്കാട്','Palakkad','पलक्कड़','பாலக்காடு')},
+{lat:9.5916,lon:76.5222,n:L('കോട്ടയം','Kottayam','कोट्टायम','கோட்டயம்')},
+{lat:11.8745,lon:75.3704,n:L('കണ്ണൂർ','Kannur','कन्नूर','கண்ணூர்')},
+{lat:8.5241,lon:76.9366,n:L('തിരുവനന്തപുരം','Thiruvananthapuram','तिरुवनंतपुरम','திருவனந்தபுரம்')},
+{lat:9.9312,lon:76.2673,n:L('കൊച്ചി','Kochi','कोच्चि','கொச்சி')},
+{lat:10.5276,lon:76.2144,n:L('തൃശ്ശൂർ','Thrissur','त्रिशूर','திருச்சூர்')},
+{lat:11.0510,lon:76.0711,n:L('മലപ്പുറം','Malappuram','मलप्पुरम','மலப்புரம்')}
+];
+const WX_ICON={clear:'☀️',partly:'⛅',overcast:'☁️',fog:'🌫️',drizzle:'🌦️',rain:'🌧️',showers:'🌧️',thunder:'⛈️'};
+function wmo(c){if(c===0)return'clear';if(c<=2)return'partly';if(c===3)return'overcast';if(c===45||c===48)return'fog';if(c>=51&&c<=57)return'drizzle';if(c>=61&&c<=67)return'rain';if(c>=80&&c<=82)return'showers';if(c>=95)return'thunder';return'overcast'}
+
+/* =====================================================================
+   HELPERS + STORAGE
+   ===================================================================== */
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const sget=(k,d)=>{try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}};
+const sset=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}};
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const H=3600e3, D=864e5;
+let toastT;
+function toast(m){const e=$('#toast');e.textContent=m;e.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>e.classList.remove('on'),2200)}
+function rel(ts){
+  const m=Math.round((Date.now()-ts)/6e4), r=new Intl.RelativeTimeFormat(LOC(),{numeric:'auto'});
+  if(m<1)return r.format(0,'minute'); if(m<60)return r.format(-m,'minute');
+  if(m<1440)return r.format(-Math.round(m/60),'hour'); return r.format(-Math.round(m/1440),'day');
+}
+const fmtDay=s=>{const d=new Date(s+'T00:00:00');return isNaN(d)?s:d.toLocaleDateString(LOC(),{day:'2-digit',month:'short',year:'numeric'})};
+const fmtDT=(ts,lg)=>new Date(ts).toLocaleString((LANGS.find(l=>l.c===(lg||lang))||{}).loc||LOC(),{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit',hour12:true,timeZone:'Asia/Kolkata'});
+async function copyText(txt){
+  try{await navigator.clipboard.writeText(txt)}catch(e){const a=document.createElement('textarea');a.value=txt;document.body.appendChild(a);a.select();try{document.execCommand('copy')}catch(_){}a.remove()}
+  toast(t('copied'));
+}
+
+/* ---------- site settings (links, UPI, texts) + optional published data ---------- */
+const S0={main:MAIN_GROUP,channel:CHANNEL,fb:FACEBOOK,ig:INSTAGRAM,upi:UPI_ID};
+const okUrl=v=>typeof v==='string'&&(v===''||/^https?:\/\//i.test(v));
+const getS=()=>sget('tu_settings',{}), putS=o=>sset('tu_settings',o);
+const hasKey=k=>{try{return localStorage.getItem(k)!==null}catch(e){return false}};
+function applySettings(){
+  const s=Object.assign({},(remote&&remote.settings)||{},getS());
+  const url=(k,d)=>(k in s&&okUrl(s[k]))?s[k]:d;
+  MAIN_GROUP=url('main',S0.main);CHANNEL=url('channel',S0.channel);FACEBOOK=url('fb',S0.fb);INSTAGRAM=url('ig',S0.ig);
+  UPI_ID=(typeof s.upi==='string')?s.upi:S0.upi;
+  GROUPS.forEach(g=>{if(g.link0===undefined)g.link0=g.link;const v=s.groups&&s.groups[g.n];g.link=okUrl(v)?v:g.link0});
+  OV=(s.texts&&typeof s.texts==='object')?s.texts:{};
+}
+async function loadRemote(){
+  if(!DATA_URL)return;
+  try{
+    const ctl=new AbortController(), tm=setTimeout(()=>ctl.abort(),2500);
+    const r=await fetch(DATA_URL,{cache:'no-store',signal:ctl.signal});clearTimeout(tm);
+    if(r.ok){const j=await r.json();if(j&&typeof j==='object')remote=j}
+  }catch(e){}
+}
+
+/* =====================================================================
+   ALERTS STORE  (traffic / accident / advisory) with expiry
+   ===================================================================== */
+let alerts=[], lf=[], admin=false, trFilter='all', wx=null, remote=null;
+const A=(kind,sev,place,desc,minAgo,expH,o)=>Object.assign({id:uid(),kind,sev,place,desc,ts:Date.now()-minAgo*6e4,exp:Date.now()+expH*H,sample:true},o||{});
+function seedAlerts(){return[
+A('traffic','high',L('താമരശ്ശേരി ചുരം','Thamarassery Churam','ताममरश्शेरी घाट','தாமரசேரி மலைப்பாதை'),L('വാഹനം കേടായത് കൊണ്ട് തിരക്ക് അനുഭവപ്പെടുന്നു.','Congestion due to a vehicle breakdown.','वाहन खराब होने से जाम लगा है।','வாகனம் பழுதடைந்ததால் நெரிசல் ஏற்பட்டுள்ளது.'),20,168,{type:'breakdown'}),
+A('traffic','high',L('NH66, പാലക്കാട്','NH66, Palakkad','NH66, पलक्कड़','NH66, பாலக்காடு'),L('റോഡ് വികസന പ്രവൃത്തി — ഒറ്റ ലൈൻ ഗതാഗതം. 25 മിനിറ്റ് വരെ വൈകാൻ സാധ്യത.','Road development work — single-lane traffic. Expect a 25 min delay.','सड़क विकास कार्य — एकल लेन यातायात। 25 मिनट की देरी संभव।','சாலைப் பணி — ஒற்றை வழிப் போக்குவரத்து. 25 நிமிட தாமதம் ஏற்படலாம்.'),55,168,{type:'roadblock'}),
+A('traffic','medium',L('കോഴിക്കോട് ബൈപാസ്','Kozhikode Bypass','कोझिकोड बाईपास','கோழிக்கோடு புறவழிச்சாலை'),L('മഴ കാരണം വെള്ളക്കെട്ട്. പതുക്കെ ഓടിക്കുക.','Waterlogging due to rain. Drive slowly.','बारिश से जलभराव। धीरे चलें।','மழையால் தண்ணீர் தேக்கம். மெதுவாகச் செல்லவும்.'),140,168,{type:'weather'}),
+A('traffic','low',L('തൃശ്ശൂർ ടൗൺ ജങ്ഷൻ','Thrissur Town Junction','त्रिशूर टाउन जंक्शन','திருச்சூர் டவுன் சந்திப்பு'),L('സിഗ്നൽ തകരാർ പരിഹരിച്ചു. ഗതാഗതം സാധാരണ നിലയിൽ.','Signal issue fixed. Traffic normal.','सिग्नल की खराबी ठीक हुई। यातायात सामान्य।','சிக்னல் கோளாறு சரிசெய்யப்பட்டது. போக்குவரத்து இயல்பு.'),900,168,{type:'cleared'}),
+A('traffic','high',L('എടപ്പാൾ — NH66','Edappal — NH66','एडप्पल — NH66','எடப்பாள் — NH66'),L('ലോറി കേടായി — ഒരു ലൈൻ അടച്ചിരിക്കുന്നു. ക്രെയിൻ എത്തി.','Truck breakdown — one lane closed. Crane has arrived.','ट्रक खराब — एक लेन बंद। क्रेन पहुँच गई है।','லாரி பழுது — ஒரு வழி மூடப்பட்டுள்ளது. கிரேன் வந்துவிட்டது.'),95,168,{type:'breakdown'}),
+A('traffic','medium',L('കണ്ണൂർ — തലശ്ശേരി','Kannur — Thalassery','कन्नूर — तलश्शेरी','கண்ணூர் — தலச்சேரி'),L('ഉത്സവ ഘോഷയാത്ര കാരണം ഭാഗികമായി ഗതാഗത നിയന്ത്രണം.','Festival procession causing partial traffic control.','त्योहार की शोभायात्रा से आंशिक यातायात नियंत्रण।','திருவிழா ஊர்வலத்தால் பகுதி போக்குவரத்துக் கட்டுப்பாடு.'),70,168,{type:'diversion'}),
+A('accident','high',L('NH544, വാളയാർ','NH544, Walayar','NH544, वालयार','NH544, வாளையார்'),L('രണ്ട് വാഹനങ്ങൾ കൂട്ടിയിടിച്ചു. ആംബുലൻസ് സ്ഥലത്തുണ്ട്. ഈ ഭാഗം ഒഴിവാക്കുക.','Two-vehicle collision. Ambulance on site. Avoid this stretch.','दो वाहनों की टक्कर। एम्बुलेंस मौके पर। इस हिस्से से बचें।','இரு வாகனங்கள் மோதல். ஆம்புலன்ஸ் சம்பவ இடத்தில் உள்ளது. இந்தப் பகுதியைத் தவிர்க்கவும்.'),150,168,{type:'accident',status:'relief'}),
+A('accident','medium',L('കോട്ടയം — ചങ്ങനാശ്ശേരി','Kottayam — Changanassery','कोट्टायम — चंगनाशेरी','கோட்டயம் — சங்கனாசேரி'),L('ഇരുചക്രവാഹന അപകടം. പരിക്കേറ്റ വ്യക്തി ആശുപത്രിയിൽ.','Two-wheeler accident. Injured person hospitalised.','दोपहिया दुर्घटना। घायल अस्पताल में भर्ती।','இருசக்கர வாகன விபத்து. காயமடைந்தவர் மருத்துவமனையில்.'),100,168,{type:'accident',status:'restored'}),
+A('accident','high',L('NH66, ചേർത്തല','NH66, Cherthala','NH66, चेरतला','NH66, சேர்த்தலா'),L('രാത്രി അമിതവേഗത്തിലുള്ള അപകടം. പോലീസ് അന്വേഷിക്കുന്നു.','Overspeed accident at night. Police investigating.','रात में तेज़ रफ़्तार दुर्घटना। पुलिस जाँच कर रही है।','இரவில் அதிவேக விபத்து. காவல்துறை விசாரிக்கிறது.'),800,168,{type:'accident',status:'investigation'}),
+A('advisory','medium','',L('ഇടുക്കി, വയനാട് ജില്ലകളിൽ അടുത്ത 24 മണിക്കൂറിൽ ശക്തമായ മഴയ്ക്ക് സാധ്യത — മലയോര റോഡുകളിൽ ജാഗ്രത.','Heavy rain expected in Idukki and Wayanad in the next 24 hours — take care on hill roads.','अगले 24 घंटों में इडुक्की और वायनाड में भारी बारिश की संभावना — पहाड़ी सड़कों पर सावधानी रखें।','அடுத்த 24 மணி நேரத்தில் இடுக்கி, வயநாட்டில் கனமழைக்கு வாய்ப்பு — மலைச் சாலைகளில் கவனம்.'),60,168,{type:'weather',icon:'🌧️'}),
+A('advisory','low','',L('ഹൈറേഞ്ച് റോഡുകളിൽ അതിരാവിലെ കനത്ത മൂടൽമഞ്ഞ്. ഹെഡ്ലൈറ്റ് ഉപയോഗിക്കുക, പതുക്കെ ഓടിക്കുക.','Dense fog on High Range roads in the early morning. Use headlights and drive slowly.','हाई रेंज की सड़कों पर सुबह घना कोहरा। हेडलाइट जलाएँ और धीरे चलें।','உயர்மலைச் சாலைகளில் அதிகாலையில் அடர் மூடுபனி. ஹெட்லைட் பயன்படுத்தி மெதுவாகச் செல்லவும்.'),200,168,{type:'weather',icon:'🌫️'}),
+A('advisory','low','',L('തീരപ്രദേശങ്ങളിൽ ഉയർന്ന തിരമാല മുന്നറിയിപ്പ്. ബീച്ച് റോഡുകളിൽ ശ്രദ്ധിക്കുക.','High-wave warning in coastal areas. Be cautious on beach roads.','तटीय क्षेत्रों में ऊँची लहरों की चेतावनी। बीच रोड पर सावधानी रखें।','கடலோரப் பகுதிகளில் உயர் அலை எச்சரிக்கை. கடற்கரைச் சாலைகளில் கவனம்.'),300,168,{type:'weather',icon:'🌊'})
+]}
+const saveAlerts=()=>sset('tu_alerts2',alerts);
+function loadAlerts(){
+  const st=sget('tu_alerts2',null);
+  if(Array.isArray(st))alerts=st;                                   // admin device: own edits
+  else if(remote&&Array.isArray(remote.alerts))alerts=remote.alerts.map(a=>Object.assign({},a));   // published data
+  else alerts=DATA_URL?[]:seedAlerts();                              // demo samples (not saved)
+}
+
+/* ---------- Lost & Found store ---------- */
+const saveLF=()=>sset('traffic_lostfound',lf);
+function seedLF(){const n=Date.now();return[
+{id:uid(),type:'lost',sample:true,desc:L('കറുത്ത ബാഗ് (ലാപ്ടോപ്പ് അടങ്ങിയത്) കോഴിക്കോട് KSRTC സ്റ്റാൻഡിൽ നഷ്ടപ്പെട്ടു. കണ്ടുകിട്ടുന്നവർ അടുത്തുള്ള പോലീസ് സ്റ്റേഷനിൽ ഏൽപ്പിക്കുക.','A black backpack (with a laptop) was lost at Kozhikode KSRTC stand. If found, please hand it over at the nearest police station.','काला बैग (लैपटॉप सहित) कोझिकोड KSRTC स्टैंड पर खो गया। मिलने पर नज़दीकी थाने में जमा करें।','கருப்புப் பை (மடிக்கணினியுடன்) கோழிக்கோடு KSRTC நிலையத்தில் தொலைந்தது. கிடைத்தால் அருகிலுள்ள காவல் நிலையத்தில் ஒப்படைக்கவும்.'),place:L('KSRTC സ്റ്റാൻഡ്, കോഴിക്കോട്','KSRTC Stand, Kozhikode','KSRTC स्टैंड, कोझिकोड','KSRTC நிலையம், கோழிக்கோடு'),date:new Date(n-D).toISOString().slice(0,10),contact:'',image:'',timestamp:n-D,exp:n+LF_DAYS.lost*D},
+{id:uid(),type:'found',sample:true,desc:L('റെയിൽവേ ലിങ്ക് റോഡിൽ നിന്നും രേഖകൾ അടങ്ങിയ പേഴ്സ് കിട്ടിയിട്ടുണ്ട്. അടുത്തുള്ള മിൽമ ബൂത്തിൽ ഏൽപ്പിച്ചു. ഉടമസ്ഥർ തെളിവ് സഹിതം വന്നാൽ നൽകുന്നതാണ്.','A wallet with documents was found on Railway Link Road and handed to the nearby Milma booth. The owner can collect it with proof.','रेलवे लिंक रोड पर दस्तावेज़ों वाला पर्स मिला है, पास के मिल्मा बूथ में जमा किया गया। मालिक प्रमाण दिखाकर ले सकते हैं।','ரயில்வே லிங்க் சாலையில் ஆவணங்களுடன் கூடிய பணப்பை கிடைத்தது; அருகிலுள்ள மில்மா கடையில் ஒப்படைக்கப்பட்டது. உரிமையாளர் ஆதாரத்துடன் பெற்றுக்கொள்ளலாம்.'),place:L('റെയിൽവേ ലിങ്ക് റോഡ്, കോഴിക്കോട്','Railway Link Road, Kozhikode','रेलवे लिंक रोड, कोझिकोड','ரயில்வே லிங்க் சாலை, கோழிக்கோடு'),date:new Date(n-D/2).toISOString().slice(0,10),contact:'',image:'',timestamp:n-D/2,exp:n+LF_DAYS.found*D}
+]}
+function loadLF(){
+  let a=sget('traffic_lostfound',null);
+  if(!Array.isArray(a))a=DATA_URL?[]:seedLF();
+  a.forEach(i=>{ // migrate posts made by the earlier version of this page
+    if(i.id===1||i.id===2||i.id===3){if(!('sample' in i))i.sample=true}
+    if(!i.timestamp)i.timestamp=Date.now();
+    if(!i.exp)i.exp=i.timestamp+(LF_DAYS[i.type]||30)*D;
+  });
+  lf=a;purge();saveLF();
+}
+/* remove everything whose validity has ended */
+function purge(){
+  const n=Date.now(), a0=alerts.length, l0=lf.length;
+  alerts=alerts.filter(a=>!a.exp||a.exp>n); lf=lf.filter(i=>!i.exp||i.exp>n);
+  if(a0!==alerts.length&&hasKey('tu_alerts2'))saveAlerts(); if(l0!==lf.length)saveLF();
+  return a0!==alerts.length||l0!==lf.length;
+}
+
+/* =====================================================================
+   RENDER
+   ===================================================================== */
+function applyI18n(){
+  document.documentElement.lang=lang;
+  $$('[data-i]').forEach(e=>e.textContent=t(e.dataset.i));
+  $$('[data-ph]').forEach(e=>e.placeholder=t(e.dataset.ph));
+  $('#langBar').innerHTML=LANGS.map(l=>`<button type="button" data-lang="${l.c}" aria-pressed="${l.c===lang}">${l.n}</button>`).join('');
+  $('#lfSubmit').textContent='🔴 '+t('lfPost');
+  $('#copyUpiBtn').textContent=t('copy');
+}
+const NAV=['home','lostfound','traffic','accident','weather','safety','school','emergency','volunteer','group','support'];
+let cur='home';
+function renderNav(){$('#nav').innerHTML=NAV.map(id=>`<button type="button" class="navlink ${id==='lostfound'?'hot':''} ${id===cur?'active':''}" data-nav="${id}">${id==='lostfound'?'🔴 ':''}${esc(t('nav_'+id))}</button>`).join('')}
+function showPanel(id,quiet){
+  if(!NAV.includes(id))id='home'; cur=id;
+  $$('.panel').forEach(p=>p.classList.toggle('active',p.id===id));
+  $$('.navlink').forEach(n=>n.classList.toggle('active',n.dataset.nav===id));
+  const act=$('.navlink.active'); if(act&&act.scrollIntoView)act.scrollIntoView({inline:'center',block:'nearest'});
+  if(!quiet){window.scrollTo({top:0});try{history.replaceState(null,'','#'+id)}catch(e){}}
+}
+function renderQuick(){
+  const items=[['lostfound','🔴','nav_lostfound','hot'],['traffic','🚦','nav_traffic',''],['accident','🚧','nav_accident',''],['weather','🌦️','nav_weather',''],['emergency','📞','emTitle',''],['volunteer','🤝','nav_volunteer','']];
+  $('#quick').innerHTML=items.map(([id,ic,k,c])=>`<button type="button" class="quicklink ${c}" data-nav="${id}"><div class="ic">${ic}</div><h3>${esc(t(k))}</h3><p>${esc(t('q_'+id))}</p></button>`).join('');
+}
+function actionRow(id){
+  return `<div class="ac-act"><button class="btn wa sm" type="button" data-act="share-al" data-id="${id}">↗ ${esc(t('share'))}</button>
+  <button class="btn ghost sm adm-only" type="button" data-act="edit-al" data-id="${id}">✏️ ${esc(t('edit'))}</button>
+  <button class="btn danger sm adm-only" type="button" data-act="del-al" data-id="${id}">🗑 ${esc(t('del'))}</button></div>`;
+}
+function alertCard(a){
+  const ev=EVENTS[a.type]||EVENTS.roadblock, icon=a.icon||ev.ic, place=tx(a.place);
+  return `<article class="card alert-card ${a.sev}">
+    <div class="ac-top"><span class="badge ${a.sev}">${esc(t('s_'+a.sev))}</span>${a.sample?`<span class="badge sample">${esc(t('sample'))}</span>`:''}</div>
+    <h3>${icon}${place?' '+esc(place):''}</h3>
+    <div class="meta stamp">🕒 ${esc(fmtDT(a.ts))} · ${esc(rel(a.ts))}</div>
+    ${a.status?`<div class="meta">📍 ${esc(t('st_'+a.status))}</div>`:''}
+    <p class="desc">${esc(tx(a.desc))}</p>
+    ${actionRow(a.id)}
+  </article>`;
+}
+
+const byNew=(a,b)=>b.ts-a.ts;
+function renderTraffic(){
+  $('#trafficFilters').innerHTML=['all','high','medium','low'].map(f=>`<button type="button" class="filter-btn ${trFilter===f?'active':''}" data-filter="${f}">${esc(f==='all'?t('fAll'):t('s_'+f))}</button>`).join('');
+  const list=alerts.filter(a=>a.kind==='traffic'&&(trFilter==='all'||a.sev===trFilter)).sort(byNew);
+  $('#trafficList').innerHTML=list.map(alertCard).join('')||`<div class="empty">${esc(t('noAlerts'))}</div>`;
+}
+function renderAccidents(){
+  const list=alerts.filter(a=>a.kind==='accident').sort(byNew);
+  $('#accidentList').innerHTML=list.map(alertCard).join('')||`<div class="empty">${esc(t('noAlerts'))}</div>`;
+}
+function renderAdvisories(){
+  const list=alerts.filter(a=>a.kind==='advisory').sort(byNew);
+  $('#advisoryList').innerHTML=list.map(alertCard).join('')||`<div class="empty">${esc(t('noAlerts'))}</div>`;
+}
+function renderWeather(){
+  $('#weatherGrid').innerHTML=CITIES.map((c,i)=>{
+    const d=wx&&wx.d&&wx.d[i];
+    const k=d?wmo(d.code):null;
+    return `<div class="card weather-card"><div class="ic">${k?WX_ICON[k]:'🌡️'}</div><h3>${esc(tx(c.n))}</h3><div class="temp">${d?d.tmp+'°C':'—'}</div><div class="cond">${k?esc(t('w_'+k)):'&nbsp;'}</div></div>`;
+  }).join('');
+  $('#wxNote').textContent=wx&&wx.d?t('wxSrc',{t:new Date(wx.t).toLocaleTimeString(LOC(),{hour:'2-digit',minute:'2-digit',hour12:true,timeZone:'Asia/Kolkata'})}):t('wxFail');
+}
+async function loadWeather(){
+  const c=sget('tu_wx',null);
+  if(c&&c.d&&Date.now()-c.t<30*60e3){wx=c;renderWeather();return}
+  try{
+    const url='https://api.open-meteo.com/v1/forecast?latitude='+CITIES.map(x=>x.lat).join(',')+'&longitude='+CITIES.map(x=>x.lon).join(',')+'&current=temperature_2m,weather_code&timezone=Asia%2FKolkata';
+    const r=await fetch(url);if(!r.ok)throw 0;
+    const j=await r.json(), arr=Array.isArray(j)?j:[j];
+    wx={t:Date.now(),d:arr.map(x=>({tmp:Math.round(x.current.temperature_2m),code:x.current.weather_code}))};
+    sset('tu_wx',wx);
+  }catch(e){if(c&&c.d)wx=c}
+  renderWeather();
+}
+function renderTips(id,arr){$('#'+id).innerHTML=arr.map(x=>`<div class="card"><div class="ic">${x[0]}</div><h3>${esc(tx(x[1]))}</h3><p>${esc(tx(x[2]))}</p></div>`).join('')}
+function renderEmergency(){$('#emergencyGrid').innerHTML=EMERGENCY.map(e=>`<a class="card emg-card" href="tel:${e[2]}"><div class="circle">${e[0]}</div><div><h3>${esc(tx(e[1]))}</h3><div class="dial">${e[2]}</div></div></a>`).join('')}
+
+/* lost & found */
+const LF_META={lost:{ic:'🔴',k:'tLost'},found:{ic:'🟢',k:'tFound'},missing:{ic:'🟠',k:'tMissing'}};
+function contactHtml(c){
+  if(!c)return'';
+  const e=esc(c);
+  if(/^\+?[\d\s-]{8,15}$/.test(c))return `<div class="lf-contact">📞 <a href="tel:${esc(c.replace(/[\s-]/g,''))}">${e}</a></div>`;
+  return `<div class="lf-contact">📞 ${e}</div>`;
+}
+function daysLeftTxt(i){const d=Math.ceil((i.exp-Date.now())/D);return{soon:d<=3,txt:d<=0?t('endsToday'):t('daysLeft',{n:d})}}
+function lfItem(i){
+  const left=daysLeftTxt(i);
+  let main='';
+  if(i.type==='lost')main=`<button class="btn sm" style="background:var(--green);color:#fff" type="button" data-act="resolve-lf" data-id="${i.id}">✅ ${esc(t('btnFound'))}</button>`;
+  else if(i.type==='missing')main=`<button class="btn sm" style="background:var(--green);color:#fff" type="button" data-act="resolve-lf" data-id="${i.id}">✅ ${esc(t('btnLocated'))}</button>`;
+  else main=`<button class="btn sm" style="background:var(--navy);color:#fff" type="button" data-act="resolve-lf" data-id="${i.id}">📦 ${esc(t('btnClaimed'))}</button>`;
+  return `<div class="lf-item">
+    <div class="lf-tags"><span class="badge exp ${left.soon?'soon':''}">⏳ ${esc(left.txt)}</span>${i.sample?`<span class="badge sample">${esc(t('sample'))}</span>`:''}</div>
+    ${i.image?`<img class="lf-img" src="${esc(i.image)}" alt="" loading="lazy">`:''}
+    <div class="lf-desc">${esc(tx(i.desc))}</div>
+    <div class="lf-meta"><span>📍 ${esc(tx(i.place))}</span><span>📅 ${esc(fmtDay(i.date))}</span></div>
+    ${contactHtml(i.contact)}
+    <div class="lf-act">${main}
+      <button class="btn wa sm" type="button" data-act="share-lf" data-id="${i.id}">📤 ${esc(t('share'))}</button>
+      <button class="btn ghost sm adm-only" type="button" data-act="ext-lf" data-id="${i.id}">⏳ ${esc(t('extend'))}</button>
+      <button class="btn danger sm adm-only" type="button" data-act="del-lf" data-id="${i.id}">🗑 ${esc(t('del'))}</button>
+    </div></div>`;
+}
+function renderLF(){
+  [['lost','lostList','cLost'],['found','foundList','cFound'],['missing','missingList','cMissing']].forEach(([ty,el,c])=>{
+    const list=lf.filter(i=>i.type===ty).sort((a,b)=>b.timestamp-a.timestamp);
+    $('#'+el).innerHTML=list.map(lfItem).join('')||`<div class="empty">${esc(t('lfEmpty'))}</div>`;
+    $('#'+c).textContent=list.length;
+  });
+  const sel=$('#lfType'), v=sel.value||'lost';
+  sel.innerHTML=['lost','found','missing'].map(k=>`<option value="${k}">${LF_META[k].ic} ${esc(t(LF_META[k].k))}</option>`).join('');
+  sel.value=v;
+  $('#howList').innerHTML=[['🔴','tLost','how_lost'],['🟢','tFound','how_found'],['🟠','tMissing','how_missing'],['📸','how_photoL','how_photo'],['📞','how_contactL','how_contact']]
+    .map(([ic,a,b])=>`<li>${ic} <b>${esc(t(a))}</b> — ${esc(t(b))}</li>`).join('');
+  $('#expNote').textContent=t('expNote',{a:LF_DAYS.lost,b:LF_DAYS.missing});
+}
+
+/* stats / flash / ticker */
+const volTotal=()=>BASE_VOLUNTEERS+sget('traffic_volunteers',[]).length;
+function renderStats(){$('#volCountSide').textContent=t('voCount',{n:volTotal()})}
+const getBanner=()=>{const b=sget('tu_banner',null);return b!==null?b:((remote&&remote.banner)||null)};
+function renderFlash(){
+  const f=$('#flash'), b=$('#flashText'), bn=getBanner();
+  f.classList.remove('muted');
+  if(bn&&bn.off){
+    if(!admin){f.hidden=true;return}
+    f.hidden=false;f.classList.add('muted');b.textContent='🚫 '+t('bannerOff');b.title='';delete b.dataset.nav;return;
+  }
+  let txt='', nav='traffic';
+  if(bn&&bn.text){txt=tx(bn.text)}
+  else{
+    const c=alerts.filter(a=>a.kind!=='advisory'&&a.sev==='high').sort(byNew)[0];
+    if(c){const ev=EVENTS[c.type]||EVENTS.accident;txt=`${ev.ic} ${tx(c.place)} — ${tx(c.desc)}`;nav=c.kind==='accident'?'accident':'traffic'}
+  }
+  if(!txt){f.hidden=true;return}
+  f.hidden=false;b.textContent=txt;b.title=txt;b.dataset.nav=nav;
+}
+function buildTicker(){
+  const items=[
+    ...alerts.filter(a=>a.kind==='traffic').sort(byNew).map(a=>`${(EVENTS[a.type]||EVENTS.roadblock).ic} ${tx(a.place)} — ${tx(a.desc)}`),
+    ...alerts.filter(a=>a.kind==='accident'&&a.sev==='high').sort(byNew).map(a=>`🚨 ${tx(a.place)} — ${tx(a.desc)}`),
+    ...alerts.filter(a=>a.kind==='advisory').sort(byNew).map(a=>`${a.icon||'⚠️'} ${tx(a.desc)}`),
+    ...lf.slice().sort((a,b)=>b.timestamp-a.timestamp).slice(0,3).map(i=>`${LF_META[i.type].ic} ${t(LF_META[i.type].k)}: ${tx(i.desc).replace(/\s+/g,' ').slice(0,70)}…`)
+  ];
+  const html=(items.length?items:['🚦 Traffic Updates']).map(s=>`<span>${esc(s)}</span>`).join('');
+  const tr=$('#vmsTrack'); tr.innerHTML=html+html;
+  tr.style.animationDuration=Math.max(35,Math.round(items.join('').length/9))+'s';
+}
+function renderGroups(){
+  const cards=[['💬','c_wa',MAIN_GROUP],['📢','c_ch',CHANNEL],['📘','c_fb',FACEBOOK],['📸','c_ig',INSTAGRAM]].filter(c=>c[2]);
+  $('#channelGrid').innerHTML=cards.map(([ic,k,url])=>`<div class="card channel-card"><div class="ic">${ic}</div><div><h3>${esc(t(k))}</h3><p>${esc(t(k+'_d'))}</p><a class="join-link" href="${esc(url)}" target="_blank" rel="noopener">${esc(t(k+'_l'))}</a></div></div>`).join('');
+  const linked=GROUPS.filter(g=>g.link);
+  $('#regional').hidden=!linked.length;
+  $('#glist').innerHTML=linked.map(g=>`<div class="g"><span><b>${esc(g.n)}</b> <small style="color:var(--mute)">${g.m.toLocaleString(LOC())}</small></span><a href="${esc(g.link)}" target="_blank" rel="noopener">${esc(t('joinGroup'))}</a></div>`).join('');
+}
+function renderInterests(){
+  const checked=$$('#interests input:checked').map(x=>x.value);
+  $('#interests').innerHTML=['traffic','school','firstresponse','awareness'].map(k=>`<label><input type="checkbox" name="interest" value="${k}" ${checked.includes(k)?'checked':''}> ${esc(t('i_'+k))}</label>`).join('');
+}
+function updateClock(){$('#clock').textContent='📅 '+fmtDT(Date.now())}
+
+function renderAll(){
+  applyI18n();renderNav();renderQuick();renderTraffic();renderAccidents();renderAdvisories();renderWeather();
+  renderTips('safetyTips',SAFETY);renderTips('schoolTips',SCHOOL);renderEmergency();renderLF();renderGroups();renderInterests();
+  renderStats();renderFlash();buildTicker();fillAdmin();updateClock();
+  $('#joinBtn').href=MAIN_GROUP||'#';$('#joinBtn').hidden=!MAIN_GROUP;$('#chBtn').href=CHANNEL||'#';$('#chBtn').hidden=!CHANNEL;
+  $('#donateCard').hidden=!UPI_ID;$('#upiText').textContent=UPI_ID;
+}
+
+/* =====================================================================
+   SHARE (WhatsApp-ready text, multi-language)
+   ===================================================================== */
+let shBuild=null, shLangs=[];
+function openShare(build){
+  shBuild=build;shLangs=[lang];
+  $('#shLangBox').innerHTML=LANGS.map(l=>`<label><input type="checkbox" value="${l.c}" ${l.c===lang?'checked':''}> ${l.n}</label>`).join('');
+  updShare();$('#shDlg').showModal();
+}
+function updShare(){const txt=shBuild(shLangs);$('#shText').value=txt;$('#shWa').href='https://wa.me/?text='+encodeURIComponent(txt)}
+function foot(){return ['','— Traffic Updates','📢 '+CHANNEL]}
+function alertShare(a){return langs=>{
+  const first=langs[0], ev=EVENTS[a.type]||EVENTS.roadblock;
+  const head=`${a.icon||ev.ic} *${tx2(T['k_'+a.kind],first)}*${a.kind==='advisory'?'':' · '+tx2(T['s_'+a.sev],first)}`;
+  const out=[head];
+  const place=tx2(a.place,first); if(place)out.push('📍 *'+place+'*'); out.push('');
+  langs.forEach(l=>out.push(tx2(a.desc,l)));
+  out.push('','🕒 '+fmtDT(a.ts,first),...foot());
+  return out.join('\n');
+}}
+function lfShare(i){return langs=>{
+  const first=langs[0], m=LF_META[i.type];
+  const out=[`${m.ic} *${tx2(T[m.k],first)}* — ${tx2(T.nav_lostfound,first)}`,''];
+  out.push(tx2(i.desc,first),'');
+  out.push('📍 '+tx2(i.place,first),'📅 '+new Date(i.date+'T00:00:00').toLocaleDateString((LANGS.find(l=>l.c===first)||{}).loc,{day:'2-digit',month:'short',year:'numeric'}));
+  if(i.contact)out.push('📞 '+i.contact);
+  out.push(...foot());
+  return out.join('\n');
+}}
+const tx2=(v,lg)=>typeof v==='string'?v:(v&&(v[lg]||v.ml||v.en||Object.values(v).find(Boolean)))||'';
+
+/* =====================================================================
+   ADMIN
+   ===================================================================== */
+function setAdmin(on){admin=on;document.body.classList.toggle('is-admin',on);try{sessionStorage.setItem('tu_admin',on?'1':'')}catch(e){}renderFlash()}
+const hashStr=s=>{let h1=0xdeadbeef,h2=0x41c6ce57;for(let i=0;i<s.length;i++){const c=s.charCodeAt(i);h1=Math.imul(h1^c,2654435761);h2=Math.imul(h2^c,1597334677)}h1=Math.imul(h1^(h1>>>16),2246822507)^Math.imul(h2^(h2>>>13),3266489909);h2=Math.imul(h2^(h2>>>16),2246822507)^Math.imul(h1^(h1>>>13),3266489909);return (4294967296*(2097151&h2)+(h1>>>0)).toString(36)};
+const passOk=v=>{const s=getS();return s.passHash?hashStr(v)===s.passHash:v===ADMIN_PIN};
+const toLocalInput=ts=>new Date(ts-new Date(ts).getTimezoneOffset()*6e4).toISOString().slice(0,16);
+let editId=null, editPlaceObj=null;
+
+/* ---------- alert form (new + edit) ---------- */
+function expOpts(edit){return (edit?`<option value="keep">${esc(t('keep'))}</option>`:'')+[6,12,24,48,72,168].map(h=>`<option value="${h}">${h<48?h+' '+t('hrs'):(h/24)+' '+t('dys')}</option>`).join('')}
+function setAlertMode(){
+  $('#alSummary').textContent=editId?'✏️ '+t('editAlert'):'➕ '+t('newAlert');
+  $('#alSubmit').textContent=editId?t('update'):t('publish');
+  $('#alCancel').hidden=!editId;
+}
+function fillAdmin(){
+  const v=id=>$('#'+id).value;
+  const k=v('aKind')||'traffic', ty=v('aType'), sv=v('aSev')||'medium', ex=v('aExp'), st=v('aStatus');
+  $('#aKind').innerHTML=['traffic','accident','advisory'].map(x=>`<option value="${x}">${esc(t('k_'+x))}</option>`).join('');
+  $('#aType').innerHTML=Object.keys(EVENTS).map(x=>`<option value="${x}">${EVENTS[x].ic} ${esc(tx(EVENTS[x].n))}</option>`).join('');
+  $('#aSev').innerHTML=['high','medium','low'].map(x=>`<option value="${x}">${esc(t('s_'+x))}</option>`).join('');
+  $('#aExp').innerHTML=expOpts(!!editId);
+  $('#aStatus').innerHTML=`<option value="">${esc(t('st_none'))}</option>`+['relief','restored','investigation'].map(x=>`<option value="${x}">${esc(t('st_'+x))}</option>`).join('');
+  $('#aKind').value=k; if(ty)$('#aType').value=ty; $('#aSev').value=sv;
+  $('#aExp').value=(ex&&[...$('#aExp').options].some(o=>o.value===ex))?ex:(editId?'keep':'24');
+  $('#aStatus').value=st; $('#aStatusWrap').style.display=k==='accident'?'':'none';
+  if(!$('#aDescs').children.length){
+    $('#aDescs').innerHTML=LANGS.map(l=>`<div class="field"><label for="aD_${l.c}">${l.n}</label><textarea id="aD_${l.c}" data-l="${l.c}" maxlength="400"></textarea></div>`).join('');
+  }
+  if(!$('#aTime').value)$('#aTime').value=toLocalInput(Date.now());
+  setAlertMode();
+}
+function resetAlertForm(){
+  editId=null;editPlaceObj=null;$('#alForm').reset();$('#aPlace').dataset.orig='';$$('#aDescs textarea').forEach(x=>x.value='');$('#aTime').value=toLocalInput(Date.now());
+  fillAdmin();$('#aSev').value='medium';$('#aExp').value='24';
+}
+function startEdit(id){
+  const a=alerts.find(x=>x.id===id);if(!a)return;
+  editId=id;fillAdmin();
+  $('#aKind').value=a.kind;$('#aType').value=EVENTS[a.type]?a.type:'roadblock';$('#aSev').value=a.sev;
+  $('#aStatusWrap').style.display=a.kind==='accident'?'':'none';$('#aStatus').value=a.status||'';
+  const shown=tx(a.place);editPlaceObj=(a.place&&typeof a.place==='object')?a.place:null;
+  $('#aPlace').value=shown;$('#aPlace').dataset.orig=shown;
+  $('#aTime').value=toLocalInput(a.ts);$('#aExp').value='keep';
+  LANGS.forEach(l=>{$('#aD_'+l.c).value=typeof a.desc==='string'?a.desc:(a.desc&&a.desc[l.c])||''});
+  setAlertMode();openAdmin('dAlert',true);
+}
+$('#aKind').onchange=()=>{const k=$('#aKind').value;$('#aStatusWrap').style.display=k==='accident'?'':'none';const ty=k==='accident'?'accident':k==='advisory'?'weather':null;if(ty)$('#aType').value=ty};
+$('#alCancel').onclick=()=>{resetAlertForm()};
+$('#alForm').onsubmit=e=>{
+  e.preventDefault();
+  if(!admin)return;
+  const kind=$('#aKind').value, type=$('#aType').value, place=$('#aPlace').value.trim();
+  const din={};LANGS.forEach(l=>din[l.c]=$('#aD_'+l.c).value.trim());
+  if(!place&&!(kind==='advisory'&&Object.values(din).some(Boolean))){toast(t('needPlace'));return}
+  const desc={};LANGS.forEach(l=>desc[l.c]=din[l.c]||EVENTS[type].d[l.c].replace('{p}',place));
+  const ts=$('#aTime').value?new Date($('#aTime').value).getTime():Date.now();
+  const sev=$('#aSev').value, status=kind==='accident'?($('#aStatus').value||null):null, ex=$('#aExp').value;
+  if(editId){
+    const a=alerts.find(x=>x.id===editId);
+    if(a){
+      const oldType=a.type;
+      a.kind=kind;a.type=type;a.sev=sev;a.desc=desc;a.status=status;a.ts=ts;
+      a.place=(editPlaceObj&&place===$('#aPlace').dataset.orig)?editPlaceObj:place;
+      if(kind==='advisory'){a.icon=(a.icon&&oldType===type)?a.icon:EVENTS[type].ic}else delete a.icon;
+      if(ex!=='keep')a.exp=Date.now()+(+ex)*H;
+      delete a.sample;
+    }
+  }else{
+    const o={id:uid(),kind,sev,type,place,desc,status,ts,exp:Date.now()+(+ex||24)*H};
+    if(kind==='advisory')o.icon=EVENTS[type].ic;
+    alerts.push(o);
+  }
+  saveAlerts();
+  const was=!!editId;resetAlertForm();refresh();$('#admDlg').close();toast(t(was?'updated':'published'));
+  showPanel(kind==='accident'?'accident':kind==='advisory'?'weather':'traffic');
+};
+
+/* ---------- top banner ---------- */
+function autoBanner(lg){
+  const c=alerts.filter(a=>a.kind!=='advisory'&&a.sev==='high').sort(byNew)[0];
+  if(!c)return'';const ev=EVENTS[c.type]||EVENTS.accident;
+  return `${ev.ic} ${tx2(c.place,lg)} — ${tx2(c.desc,lg)}`;
+}
+function fillBanner(){
+  const bn=sget('tu_banner',null)||((remote&&remote.banner)||null), custom=bn&&bn.text;
+  $('#bnBox').innerHTML=LANGS.map(l=>`<div class="field"><label for="bn_${l.c}">${l.n}</label><textarea id="bn_${l.c}" rows="2" maxlength="300">${esc(custom?(bn.text[l.c]||''):autoBanner(l.c))}</textarea></div>`).join('');
+}
+$('#bnSave').onclick=()=>{const text={};let any=false;LANGS.forEach(l=>{const v=$('#bn_'+l.c).value.trim();text[l.c]=v;if(v)any=true});if(!any)return toast(t('needText'));sset('tu_banner',{text});renderFlash();toast(t('saved'))};
+$('#bnDel').onclick=()=>{if(!confirm(t('delConfirm')))return;sset('tu_banner',{off:true});renderFlash();toast(t('deleted'))};
+$('#bnAuto').onclick=()=>{sset('tu_banner',{auto:true});renderFlash();fillBanner();toast(t('saved'))};
+
+/* ---------- links + UPI ---------- */
+function fillLinks(){
+  $('#lkMain').value=MAIN_GROUP;$('#lkChannel').value=CHANNEL;$('#lkFb').value=FACEBOOK;$('#lkIg').value=INSTAGRAM;$('#lkUpi').value=UPI_ID;
+  $('#lkGroups').innerHTML=GROUPS.map(g=>`<div class="field"><label>${esc(g.n)}</label><input type="text" data-g="${esc(g.n)}" value="${esc(g.link||'')}" placeholder="https://chat.whatsapp.com/…"></div>`).join('');
+}
+$('#lkForm').onsubmit=e=>{
+  e.preventDefault();
+  const vals={main:$('#lkMain').value.trim(),channel:$('#lkChannel').value.trim(),fb:$('#lkFb').value.trim(),ig:$('#lkIg').value.trim()};
+  const groups={};$$('#lkGroups input').forEach(i=>groups[i.dataset.g]=i.value.trim());
+  if(![...Object.values(vals),...Object.values(groups)].every(okUrl))return toast(t('badUrl'));
+  const s=getS();Object.assign(s,vals,{upi:$('#lkUpi').value.trim(),groups});putS(s);
+  applySettings();renderAll();toast(t('saved'));
+};
+
+/* ---------- home text ---------- */
+const EDIT_KEYS=['heroEyebrow','heroTitle','heroLead','heroFeatures','heroClose','tagline'];
+function fillTexts(){
+  $('#txBox').innerHTML=EDIT_KEYS.map(k=>`<div class="tx-group"><div class="tx-k">${esc(t('ek_'+k))}</div>`+LANGS.map(l=>`<div class="field"><label>${l.n}</label><textarea rows="2" data-k="${k}" data-l="${l.c}">${esc((OV[k]&&OV[k][l.c])||T[k][l.c])}</textarea></div>`).join('')+'</div>').join('');
+}
+$('#txForm').onsubmit=e=>{
+  e.preventDefault();
+  const ov={};$$('#txBox textarea').forEach(x=>{const k=x.dataset.k,l=x.dataset.l,v=x.value.trim();if(v&&v!==T[k][l])(ov[k]=ov[k]||{})[l]=v});
+  const s=getS();s.texts=ov;putS(s);applySettings();renderAll();toast(t('saved'));
+};
+$('#txReset').onclick=()=>{const s=getS();delete s.texts;putS(s);applySettings();renderAll();fillTexts();toast(t('saved'))};
+
+/* ---------- password ---------- */
+$('#pwForm').onsubmit=e=>{
+  e.preventDefault();
+  const c=$('#pwCur').value, n=$('#pwNew').value, n2=$('#pwNew2').value;
+  if(!passOk(c))return toast(t('pWrong'));
+  if(n.length<4)return toast(t('pShort'));
+  if(n!==n2)return toast(t('pMismatch'));
+  const s=getS();s.passHash=hashStr(n);putS(s);$('#pwForm').reset();toast(t('pChanged'));
+};
+
+/* ---------- publish: download site-data.json ---------- */
+function dl(name,txt,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type}));a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500)}
+$('#exportData').onclick=()=>{
+  const s=Object.assign({},(remote&&remote.settings)||{},getS());delete s.passHash;
+  const bn=sget('tu_banner',null);
+  const data={v:1,saved:new Date().toISOString(),settings:s,banner:bn!==null?bn:((remote&&remote.banner)||null),alerts:alerts.filter(a=>!a.sample)};
+  dl('site-data.json',JSON.stringify(data,null,1),'application/json');
+};
+
+/* ---------- misc admin actions ---------- */
+$('#rmSamples').onclick=()=>{if(!confirm(t('delConfirm')))return;alerts=alerts.filter(a=>!a.sample);lf=lf.filter(i=>!i.sample);saveAlerts();saveLF();refresh();toast(t('deleted'))};
+$('#logoIn').onchange=e=>{const f=e.target.files[0];if(!f)return;compress(f,256,.85).then(d=>{if(d){sset('tu_logo',d);setLogo()}})};
+function setLogo(){const d=sget('tu_logo',null);if(d)$('#logo').innerHTML=`<img src="${esc(d)}" alt="Logo">`}
+function openAdmin(sec,fromEdit){
+  if(!fromEdit)resetAlertForm();
+  fillBanner();fillLinks();fillTexts();
+  if(sec)$$('#admDlg details.acc').forEach(d=>d.open=d.id===sec);
+  $('#admDlg').showModal();$('#admDlg .db').scrollTop=0;
+}
+$('#adminLink').onclick=()=>{if(admin)openAdmin();else{$('#pinIn').value='';$('#pinDlg').showModal();setTimeout(()=>$('#pinIn').focus(),50)}};
+$('#admFab').onclick=()=>openAdmin();
+$('#pinForm').onsubmit=e=>{e.preventDefault();if(passOk($('#pinIn').value)){setAdmin(true);$('#pinDlg').close();toast('✓ '+t('adminOn'))}else{toast(t('badPin'));$('#pinIn').value=''}};
+$('#logout').onclick=()=>{setAdmin(false);$('#admDlg').close()};
+
+/* =====================================================================
+   EVENTS
+   ===================================================================== */
+document.addEventListener('click',e=>{
+  const nv=e.target.closest('[data-nav]'); if(nv){showPanel(nv.dataset.nav);return}
+  const lg=e.target.closest('[data-lang]'); if(lg){lang=lg.dataset.lang;try{localStorage.setItem('tu_lang',lang)}catch(_){ }renderAll();return}
+  const fl=e.target.closest('[data-filter]'); if(fl){trFilter=fl.dataset.filter;renderTraffic();return}
+  const cl=e.target.closest('[data-close]'); if(cl){cl.closest('dialog').close();return}
+  const b=e.target.closest('[data-act]'); if(!b)return;
+  const id=b.dataset.id, act=b.dataset.act;
+  if(act==='share-al'){const a=alerts.find(x=>x.id===id);if(a)openShare(alertShare(a))}
+  else if(act==='share-lf'){const i=lf.find(x=>String(x.id)===String(id));if(i)openShare(lfShare(i))}
+  else if(act==='edit-al'){if(admin)startEdit(id)}
+  else if(act==='del-al'){if(!admin||!confirm(t('delConfirm')))return;alerts=alerts.filter(x=>x.id!==id);saveAlerts();refresh();toast(t('deleted'))}
+  else if(act==='del-lf'){if(!admin||!confirm(t('delConfirm')))return;lf=lf.filter(x=>String(x.id)!==String(id));saveLF();refresh();toast(t('deleted'))}
+  else if(act==='ext-lf'){if(!admin)return;const i=lf.find(x=>String(x.id)===String(id));if(i){i.exp=Date.now()+(LF_DAYS[i.type]||30)*D;saveLF();refresh();toast(t('extended'))}}
+  else if(act==='resolve-lf'){if(!confirm(t('lfConfirm')))return;lf=lf.filter(x=>String(x.id)!==String(id));saveLF();refresh();toast(t('lfClosed'))}
+  else if(act==='banner-edit'){if(admin)openAdmin('dBanner')}
+  else if(act==='banner-del'){if(!admin||!confirm(t('delConfirm')))return;sset('tu_banner',{off:true});renderFlash();toast(t('deleted'))}
+});
+function refresh(){renderTraffic();renderAccidents();renderAdvisories();renderLF();renderStats();renderFlash();buildTicker()}
+$$('dialog').forEach(d=>d.addEventListener('click',e=>{if(e.target===d)d.close()}));
+$('#shLangBox').addEventListener('change',()=>{shLangs=$$('#shLangBox input:checked').map(x=>x.value);if(!shLangs.length){const f=$('#shLangBox input');f.checked=true;shLangs=[f.value]}updShare()});
+$('#shText').addEventListener('input',()=>{$('#shWa').href='https://wa.me/?text='+encodeURIComponent($('#shText').value)});
+$('#shCopy').onclick=()=>copyText($('#shText').value);
+$('#shMore').onclick=()=>{if(navigator.share)navigator.share({text:$('#shText').value}).catch(()=>{});else copyText($('#shText').value)};
+$('#copyUpiBtn').onclick=()=>copyText(UPI_ID);
+
+
+/* lost & found form */
+function compress(file,max,q){return new Promise(res=>{
+  const fr=new FileReader();
+  fr.onload=()=>{const im=new Image();
+    im.onload=()=>{const s=Math.min(1,max/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.max(1,Math.round(im.width*s));c.height=Math.max(1,Math.round(im.height*s));c.getContext('2d').drawImage(im,0,0,c.width,c.height);res(c.toDataURL('image/jpeg',q))};
+    im.onerror=()=>res('');im.src=fr.result};
+  fr.onerror=()=>res('');fr.readAsDataURL(file)})}
+$('#lostFoundForm').addEventListener('submit',async e=>{
+  e.preventDefault();
+  const type=$('#lfType').value, desc=$('#lfDesc').value.trim(), place=$('#lfPlace').value.trim(), date=$('#lfDate').value, contact=$('#lfContact').value.trim(), f=$('#lfImage').files[0];
+  if(!desc||!place||!date){toast(t('lfReq'));return}
+  const image=f?await compress(f,900,.72):'';
+  const n=Date.now(), item={id:n,type,desc,place,date,contact,image,timestamp:n,exp:n+(LF_DAYS[type]||30)*D};
+  lf.push(item);
+  if(!saveLF()){lf.pop();toast(t('storageFull'));return}
+  renderLF();renderStats();buildTicker();
+  const ok=$('#lfSuccess');ok.textContent='✅ '+t('lfOk');ok.style.display='block';
+  $('#lostFoundForm').reset();$('#lfDate').value=new Date().toISOString().slice(0,10);
+  setTimeout(()=>ok.style.display='none',4500);
+});
+
+/* volunteer form */
+$('#volunteerForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  const name=$('#vName').value.trim(),phone=$('#vPhone').value.trim(),place=$('#vPlace').value.trim();
+  if(!name||!phone||!place)return;
+  const interests=$$('#interests input:checked').map(c=>c.value);
+  const saved=sget('traffic_volunteers',[]);saved.push({name,phone,place,interests,ts:new Date().toISOString()});sset('traffic_volunteers',saved);
+  $('#volunteerSuccess').style.display='block';e.target.reset();renderStats();
+});
+
+/* =====================================================================
+   INIT
+   ===================================================================== */
+(async()=>{
+  await loadRemote();
+  applySettings();loadAlerts();loadLF();setLogo();
+  try{if(sessionStorage.getItem('tu_admin')==='1')setAdmin(true)}catch(e){}
+  $('#lfDate').value=new Date().toISOString().slice(0,10);$('#lfDate').max=$('#lfDate').value;
+  renderAll();
+  showPanel((location.hash||'').slice(1)||'home',true);
+  window.addEventListener('hashchange',()=>showPanel((location.hash||'').slice(1)||'home',true));
+  loadWeather();
+  setInterval(()=>{if(purge())refresh();else{renderTraffic();renderAccidents();renderAdvisories();renderLF()}updateClock()},60000);
+})();
+</script>
+</body>
+</html>
